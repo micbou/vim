@@ -8,8 +8,11 @@
 # Location of gvim_ole.exe, vimw32.exe, GvimExt/*, etc.
 !define VIMSRC "..\src"
 
+# Location of root files
+!define VIMROOT ".."
+
 # Location of runtime files
-!define VIMRT ".."
+!define VIMRUNTIME "..\runtime"
 
 # Location of extra tools: diff.exe
 !define VIMTOOLS ..\..
@@ -19,7 +22,7 @@
 !define HAVE_UPX
 
 # comment the next line if you do not want to add Native Language Support
-!define HAVE_NLS
+#!define HAVE_NLS
 
 !define VER_MAJOR 7
 !define VER_MINOR 4
@@ -50,7 +53,7 @@ UninstallIcon icons\vim_uninst_16c.ico
 # with the BringToFront.
 # BGGradient 004000 008200 FFFFFF
 LicenseText "You should read the following before installing:"
-LicenseData ${VIMRT}\doc\uganda.nsis.txt
+LicenseData ${VIMRUNTIME}\doc\uganda.nsis.txt
 
 !ifdef HAVE_UPX
   !packhdr temp.dat "upx --best --compress-icons=1 temp.dat"
@@ -186,55 +189,55 @@ Section "Vim executables and runtime files"
 	File /oname=uninstal.exe ${VIMSRC}\uninstalw32.exe
 	File ${VIMSRC}\vimrun.exe
 	File /oname=xxd.exe ${VIMSRC}\xxdw32.exe
-	File ${VIMTOOLS}\diff.exe
-	File ${VIMRT}\vimtutor.bat
-	File ${VIMRT}\README.txt
+	#File ${VIMTOOLS}\diff.exe
+	File ${VIMROOT}\vimtutor.bat
+	File ${VIMROOT}\README.txt
 	File ..\uninstal.txt
-	File ${VIMRT}\*.vim
-	File ${VIMRT}\rgb.txt
+	File ${VIMRUNTIME}\*.vim
+	File ${VIMRUNTIME}\rgb.txt
 
 	SetOutPath $0\colors
-	File ${VIMRT}\colors\*.*
+	File ${VIMRUNTIME}\colors\*.*
 
 	SetOutPath $0\compiler
-	File ${VIMRT}\compiler\*.*
+	File ${VIMRUNTIME}\compiler\*.*
 
 	SetOutPath $0\doc
-	File ${VIMRT}\doc\*.txt
-	File ${VIMRT}\doc\tags
+	File ${VIMRUNTIME}\doc\*.txt
+	File ${VIMRUNTIME}\doc\tags
 
 	SetOutPath $0\ftplugin
-	File ${VIMRT}\ftplugin\*.*
+	File ${VIMRUNTIME}\ftplugin\*.*
 
 	SetOutPath $0\indent
-	File ${VIMRT}\indent\*.*
+	File ${VIMRUNTIME}\indent\*.*
 
 	SetOutPath $0\macros
-	File ${VIMRT}\macros\*.*
+	File ${VIMRUNTIME}\macros\*.*
 
 	SetOutPath $0\plugin
-	File ${VIMRT}\plugin\*.*
+	File ${VIMRUNTIME}\plugin\*.*
 
 	SetOutPath $0\autoload
-	File ${VIMRT}\autoload\*.*
+	File ${VIMRUNTIME}\autoload\*.*
 
 	SetOutPath $0\autoload\xml
-	File ${VIMRT}\autoload\xml\*.*
+	File ${VIMRUNTIME}\autoload\xml\*.*
 
 	SetOutPath $0\syntax
-	File ${VIMRT}\syntax\*.*
+	File ${VIMRUNTIME}\syntax\*.*
 
 	SetOutPath $0\spell
-	File ${VIMRT}\spell\*.txt
-	File ${VIMRT}\spell\*.vim
-	File ${VIMRT}\spell\*.spl
-	File ${VIMRT}\spell\*.sug
+	File ${VIMRUNTIME}\spell\*.txt
+	File ${VIMRUNTIME}\spell\*.vim
+	File ${VIMRUNTIME}\spell\*.spl
+	File ${VIMRUNTIME}\spell\*.sug
 
 	SetOutPath $0\tools
-	File ${VIMRT}\tools\*.*
+	File ${VIMRUNTIME}\tools\*.*
 
 	SetOutPath $0\tutor
-	File ${VIMRT}\tutor\*.*
+	File ${VIMRUNTIME}\tutor\*.*
 SectionEnd
 
 ##########################################################
@@ -351,12 +354,12 @@ SectionEnd
 		SectionIn 1 3
 
 		SetOutPath $0\lang
-		File /r ${VIMRT}\lang\*.*
+		File /r ${VIMRUNTIME}\lang\*.*
 		SetOutPath $0\keymap
-		File ${VIMRT}\keymap\README.txt
-		File ${VIMRT}\keymap\*.vim
+		File ${VIMRUNTIME}\keymap\README.txt
+		File ${VIMRUNTIME}\keymap\*.vim
 		SetOutPath $0
-		File ${VIMRT}\libintl.dll
+		File ${VIMRUNTIME}\libintl.dll
 	SectionEnd
 !endif
 

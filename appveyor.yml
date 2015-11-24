@@ -18,5 +18,6 @@ matrix:
         - msvc: 14
 build_script:
     - python build.py --msvc %msvc% --arch %arch%
+    - python install.py
 test_script:
     - python test.py --msvc %msvc%
