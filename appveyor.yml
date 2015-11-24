@@ -16,8 +16,16 @@ environment:
 matrix:
     allow_failures:
         - msvc: 14
+install:
+    # Install NSIS and update PATH
+    - curl -fsSL -o nsis-3.0b2-setup.exe http://prdownloads.sourceforge.net/nsis/nsis-3.0b2-setup.exe
+    - nsis-3.0b2-setup.exe /S
+    - set PATH=C:\Program Files (x86)\NSIS;%PATH%
 build_script:
     - python build.py --msvc %msvc% --arch %arch%
     - python install.py
 test_script:
     - python test.py --msvc %msvc%
+artifacts:
+    - path: nsis/gvim.exe
+      name: gvim
