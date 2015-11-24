@@ -34,7 +34,11 @@ artifacts:
     - path: nsis/gvim74.exe
       name: vim
 deploy:
-    - provider: GitHub
+    - release: $(appveyor_repo_tag_name)
+      description: 'Vim for Windows'
+      provider: GitHub
+      auth_token:
+        secure: gm7NWc/q5jrfYIipgRGs8Xd8+4BmWeEAEgfnCJYcu2EpgFdAxIMcT6ixBCE2gg5F
       artifact: vim
       draft: false
       prerelease: false
