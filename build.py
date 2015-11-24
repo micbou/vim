@@ -38,8 +38,8 @@ def get_python3_path(args):
     if args.python3:
         return args.python3
     if args.arch == 64:
-        return r'C:\Python35-x64'
-    return r'C:\Python35'
+        return r'C:\Python34-x64'
+    return r'C:\Python34'
 
 
 def get_pythons_build_args(args):
@@ -49,7 +49,7 @@ def get_pythons_build_args(args):
     return ['PYTHON_VER=27',
             'DYNAMIC_PYTHON=yes',
             'PYTHON={0}'.format(python2_path),
-            'PYTHON3_VER=35',
+            'PYTHON3_VER=34',
             'DYNAMIC_PYTHON3=yes',
             'PYTHON3={0}'.format(python3_path)]
 
