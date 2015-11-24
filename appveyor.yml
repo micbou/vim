@@ -1,18 +1,18 @@
 version: "{build}"
 environment:
     matrix:
-        - arch: 32
-          msvc: 11
+        #- arch: 32
+        #  msvc: 11
         - arch: 32
           msvc: 12
-        - arch: 32
-          msvc: 14
-        - arch: 64
-          msvc: 11
+        #- arch: 32
+        #- msvc: 14
+        #- arch: 64
+        #- msvc: 11
         - arch: 64
           msvc: 12
-        - arch: 64
-          msvc: 14
+        #- arch: 64
+        #- msvc: 14
 matrix:
     allow_failures:
         - msvc: 14
@@ -30,7 +30,7 @@ build_script:
 test_script:
     - python test.py --msvc %msvc%
 artifacts:
-    - path: nsis/gvim74.exe
+    - path: nsis\vim*.exe
       name: vim
 before_deploy:
     - python deploy.py %arch% $(appveyor_repo_tag)

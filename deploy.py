@@ -14,7 +14,7 @@ DOC_DIR = os.path.join(RUNTIME_DIR, 'doc')
 XXD_DIR = os.path.join(SOURCES_DIR, 'xxd')
 GVIM_EXT_DIR = os.path.join(SOURCES_DIR, 'GvimExt')
 GVIM_NSIS_PATH = os.path.join(NSIS_DIR, 'gvim.nsi')
-GVIM_INSTALL_PATH = os.path.join(NSIS_DIR, 'gvim-installer.exe')
+GVIM_INSTALLER_PATH = os.path.join(NSIS_DIR, 'gvim-installer.exe')
 
 
 def generate_uganda_file():
@@ -27,8 +27,8 @@ def rename_vim_installer(args):
                  'x86')
     installer_name = 'vim{0}-{1}'.format(args.tag, arch_name)
 
-    shutil.copy(GVIM_INSTALL_PATH,
-                os.path.join(SCRIPT_DIR, installer_name))
+    shutil.move(GVIM_INSTALLER_PATH,
+                os.path.join(GVIM_NSIS_PATH, installer_name))
 
 
 def generate_vim_installer(args):
