@@ -21,11 +21,15 @@ install:
     - curl -fsSL -o nsis-3.0b2-setup.exe http://prdownloads.sourceforge.net/nsis/nsis-3.0b2-setup.exe
     - nsis-3.0b2-setup.exe /S
     - set PATH=C:\Program Files (x86)\NSIS;%PATH%
+    # Install UPX
+    - curl -fsSL -o upx391w.zip http://upx.sourceforge.net/download/upx391w.zip
+    - 7z x upx391w.zip
+    - set PATH=%APPVEYOR_BUILD_FOLDER%\upx391w;%PATH%
 build_script:
     - python build.py --msvc %msvc% --arch %arch%
     - python install.py
 test_script:
     - python test.py --msvc %msvc%
 artifacts:
-    - path: nsis/gvim.exe
+    - path: nsis/gvim74.exe
       name: gvim
