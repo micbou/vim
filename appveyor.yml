@@ -2,6 +2,18 @@ version: "{build}"
 environment:
     matrix:
         - arch: 32
+          msvc: 11
+        - arch: 32
+          msvc: 12
+        - arch: 32
+          msvc: 14
         - arch: 64
+          msvc: 11
+        - arch: 64
+          msvc: 12
+        - arch: 64
+          msvc: 14
 build_script:
-    - python build.py --arch %arch%
+    - python build.py --msvc %msvc% --arch %arch%
+test_script:
+    - python test.py --msvc %msvc%
