@@ -88,14 +88,13 @@ def build_vim(args, gui = True):
         raise RuntimeError('SDK include folder does not exist.')
 
     new_env['SDK_INCLUDE_DIR'] = SDK_INCLUDE_DIR
-    print( SDK_INCLUDE_DIR )
 
     nmake = os.path.join(msvc_dir, 'nmake.exe')
     if not os.path.exists(nmake):
         raise RuntimeError('nmake tool not found.')
 
     build_cmd.extend(['&',
-                      'nmake', '-f',
+                      nmake, '-f',
                       'Make_mvc.mak'])
 
     build_cmd.append(get_arch_build_args(args))
@@ -143,8 +142,8 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
-    build_vim( args, gui = False )
-    build_vim( args )
+    build_vim(args, gui = False)
+    build_vim(args)
 
 
 if __name__ == '__main__':
