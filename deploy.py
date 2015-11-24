@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 from distutils.spawn import find_executable
@@ -18,8 +19,16 @@ GVIM_INSTALLER_PATH = os.path.join(NSIS_DIR, 'gvim-installer.exe')
 
 
 def generate_uganda_file():
-    shutil.copy(os.path.join(DOC_DIR, 'uganda.txt'),
-                os.path.join(DOC_DIR, 'uganda.nsis.txt'))
+    # Uganda manual is written in Vim doc so we need to apply some formatting
+    # to it for the installer.
+    uganda_path = os.path.join(DOC_DIR, 'uganda.txt')
+    nsis_uganda_path = os.path.join(DOC_DIR, 'uganda.nsis.txt')
+    with open(uganda_path, "r") as uganda_file:
+        lines = uganda_file.readlines()
+    with open(nsis_uganda_path, "w") as nsis_uganda_file:
+        for line in lines[:-1]:
+            nsis_uganda_file.write(re.sub(r'[ \t]*\*[-a-zA-Z0-9.]*\*', '',
+                                          line))
 
 
 def rename_vim_installer(args):

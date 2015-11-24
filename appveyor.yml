@@ -7,13 +7,13 @@ environment:
         - arch: 32
           msvc: 12
         #- arch: 32
-        #- msvc: 14
+        #  msvc: 14
         #- arch: 64
-        #- msvc: 11
+        #  msvc: 11
         - arch: 64
           msvc: 12
         #- arch: 64
-        #- msvc: 14
+        #  msvc: 14
 matrix:
     allow_failures:
         - msvc: 14
