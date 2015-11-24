@@ -27,12 +27,13 @@ install:
     - set PATH=%APPVEYOR_BUILD_FOLDER%\upx391w;%PATH%
 build_script:
     - python build.py --msvc %msvc% --arch %arch%
-    - python install.py
 test_script:
     - python test.py --msvc %msvc%
 artifacts:
     - path: nsis/gvim74.exe
       name: vim
+before_deploy:
+    - python deploy.py %arch% $(appveyor_repo_tag)
 deploy:
     - release: $(appveyor_repo_tag_name)
       description: 'Vim for Windows'
@@ -45,3 +46,4 @@ deploy:
       on:
           branch: build
           appveyor_repo_tag: true
+          msvc: 12

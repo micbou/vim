@@ -9,10 +9,12 @@ from distutils.spawn import find_executable
 SCRIPT_DIR = os.path.dirname(os.path.abspath( __file__ ))
 SOURCES_DIR = os.path.join(SCRIPT_DIR, 'src')
 RUNTIME_DIR = os.path.join(SCRIPT_DIR, 'runtime')
+NSIS_DIR = os.path.join(SCRIPT_DIR, 'nsis')
 DOC_DIR = os.path.join(RUNTIME_DIR, 'doc')
 XXD_DIR = os.path.join(SOURCES_DIR, 'xxd')
 GVIM_EXT_DIR = os.path.join(SOURCES_DIR, 'GvimExt')
-GVIM_NSIS_PATH = os.path.join(SCRIPT_DIR, 'nsis', 'gvim.nsi')
+GVIM_NSIS_PATH = os.path.join(NSIS_DIR, 'gvim.nsi')
+GVIM_INSTALL_PATH = os.path.join(NSIS_DIR, 'gvim-installer.exe')
 
 
 def generate_uganda_file():
@@ -20,7 +22,16 @@ def generate_uganda_file():
                 os.path.join(DOC_DIR, 'uganda.nsis.txt'))
 
 
-def install_vim(args):
+def rename_vim_installer(args):
+    arch_name = ('x64' if args.arch == 64 else
+                 'x86')
+    installer_name = 'vim{0}-{1}'.format(args.tag, arch_name)
+
+    shutil.copy(GVIM_INSTALL_PATH,
+                os.path.join(SCRIPT_DIR, installer_name))
+
+
+def generate_vim_installer(args):
     generate_uganda_file()
 
     shutil.copy(os.path.join(SOURCES_DIR, 'install.exe'),
@@ -52,15 +63,25 @@ def install_vim(args):
 
     subprocess.check_call([makensis, GVIM_NSIS_PATH])
 
+    rename_vim_installer(args)
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    return parser.parse_args()
+    parser.add_argument('arch', type = int, choices = [32, 64],
+                        help = 'Architecture used to build Vim '
+                               '(32 or 64 bits).')
+    parser.add_argument('tag', type = str,
+                        help = 'Tag for current build.')
+
+    args = parser.parse_args()
+
+    return args
 
 
 def main():
     args = parse_arguments()
-    install_vim(args)
+    generate_vim_installer(args)
 
 
 if __name__ == '__main__':
