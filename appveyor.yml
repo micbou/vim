@@ -34,7 +34,7 @@ artifacts:
     - path: nsis\vim*.exe
       name: vim
 before_deploy:
-    - python deploy.py %arch% $(appveyor_repo_tag)
+    - python deploy.py %arch% %appveyor_repo_tag_name%
 deploy:
     - release: $(appveyor_repo_tag_name)
       description: 'Vim for Windows'
