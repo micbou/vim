@@ -40,6 +40,10 @@ def test_vim(args):
 
     gvim_path = os.path.join(SOURCES_DIR, 'gvim')
 
+    # Register gvim in silent mode to avoid a dialog window when running the
+    # tests. Otherwise, this will stuck runs on CI services.
+    subprocess.check_call([gvim_path, '-silent', '-register'])
+
     test_cmd = [nmake, '-f',
                 'Make_dos.mak',
                 'VIMPROG={0}'.format(gvim_path)]
