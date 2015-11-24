@@ -25,7 +25,7 @@ def generate_uganda_file():
 def rename_vim_installer(args):
     arch_name = ('x64' if args.arch == 64 else
                  'x86')
-    installer_name = 'vim{0}-{1}'.format(args.tag, arch_name)
+    installer_name = 'vim{0}-{1}.exe'.format(args.tag, arch_name)
 
     os.rename(GVIM_INSTALLER_PATH,
               os.path.join(NSIS_DIR, installer_name))
