@@ -13,6 +13,9 @@ environment:
           msvc: 12
         - arch: 64
           msvc: 14
+matrix:
+    allow_failures:
+        - msvc: 14
 build_script:
     - python build.py --msvc %msvc% --arch %arch%
 test_script:
