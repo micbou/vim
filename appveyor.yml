@@ -32,4 +32,12 @@ test_script:
     - python test.py --msvc %msvc%
 artifacts:
     - path: nsis/gvim74.exe
-      name: gvim
+      name: vim
+deploy:
+    - provider: GitHub
+      artifact: vim
+      draft: false
+      prerelease: false
+      on:
+          branch: build
+          appveyor_repo_tag: true
