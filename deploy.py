@@ -27,8 +27,8 @@ def rename_vim_installer(args):
                  'x86')
     installer_name = 'vim{0}-{1}'.format(args.tag, arch_name)
 
-    shutil.move(GVIM_INSTALLER_PATH,
-                os.path.join(GVIM_NSIS_PATH, installer_name))
+    os.rename(GVIM_INSTALLER_PATH,
+              os.path.join(NSIS_DIR, installer_name))
 
 
 def generate_vim_installer(args):
