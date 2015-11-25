@@ -25,8 +25,6 @@ def upload_to_bintray(args):
                              version = args.version,
                              file_path = args.filepath)
 
-    print(url)
-
     with open(args.file_input, 'rb') as f:
         response = requests.put(url,
                                 data = f,
@@ -34,8 +32,9 @@ def upload_to_bintray(args):
                                 auth = (args.username,
                                         args.api_key))
 
-    print(response.status_code)
-    print(response.text)
+    if response.status_code != 201:
+        print('Bintray upload failed with message: {0}'
+              .format(response.text))
 
 
 def parse_arguments():
