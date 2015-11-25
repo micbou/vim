@@ -7,5 +7,6 @@ if %1 == 32 (
 )
 
 set tag=%2
+set version=%tag:~1%
 
-set artifact=vim%tag:~1%-%arch%.exe
+set artifact=vim%version%-%arch%.exe

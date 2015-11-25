@@ -44,7 +44,7 @@ artifacts:
       name: vim
 deploy:
     - release: $(appveyor_repo_tag_name)
-      description: 'Vim for Windows'
+      description: 'Vim $(version) 32-bit and 64-bit for Windows with python 2.7 and python 3.4 support. Compiled with MSVC $(msvc).'
       provider: GitHub
       auth_token:
           secure: gm7NWc/q5jrfYIipgRGs8Xd8+4BmWeEAEgfnCJYcu2EpgFdAxIMcT6ixBCE2gg5F
