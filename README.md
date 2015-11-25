@@ -1,7 +1,5 @@
-`README.md` for version 7.4 of Vim: Vi IMproved.
-[![Build Status](https://travis-ci.org/vim/vim.svg?branch=master)](https://travis-ci.org/vim/vim)
-[![Coverage Status](https://coveralls.io/repos/vim/vim/badge.svg?branch=master&service=github)](https://coveralls.io/github/vim/vim?branch=master)
-[![Appveyor Build status](https://ci.appveyor.com/api/projects/status/o2qht2kjm02sgghk?svg=true)](https://ci.appveyor.com/project/chrisbra/vim)
+[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/l64ad00nmc297uut/branch/master?svg=true)](https://ci.appveyor.com/project/micbou/vim/branch/master)
+[![Bintray Download](https://api.bintray.com/packages/micbou/generic/vim/images/download.svg)](https://bintray.com/micbou/generic/vim/_latestVersion)
 
 
 ## What is Vim? ##
