@@ -82,6 +82,10 @@ def get_build_args(args, gui=True):
                        'ICONV=yes',
                        'DEBUG=no'])
 
+    if args.credit:
+        build_args.extend(['USERNAME={0}'.format(args.credit),
+                           'USERDOMAIN='])
+
     build_args.extend(get_pythons_build_args(args))
 
     return build_args
@@ -137,10 +141,13 @@ def parse_arguments():
                         'Windows (default: python interpreter architecture).' )
     parser.add_argument('--python2', type = str,
                         help = 'set python2 folder (default: C:\Python27 or '
-                        'C:\Python27-64 depending on architecture)')
+                        'C:\Python27-x64 depending on architecture)')
     parser.add_argument('--python3', type = str,
                         help = 'set python3 folder (default: C:\Python34 or '
-                        'C:\Python34-64 depending on architecture)')
+                        'C:\Python34-x64 depending on architecture)')
+    parser.add_argument('--credit', type = str,
+                        help = 'replace username@userdomain by a custom '
+                               'string in compilation credit.')
 
     args = parser.parse_args()
     if not args.arch:
