@@ -52,7 +52,7 @@ deploy:
       draft: false
       prerelease: false
       on:
-          branch: build
+          branch: master
           appveyor_repo_tag: true
           msvc: 12
 # Deploy to Bintray
