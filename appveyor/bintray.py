@@ -3,6 +3,7 @@
 import argparse
 import requests
 import os
+import time
 
 BINTRAY_BASE_URL = 'https://api.bintray.com/'
 BINTRAY_UPLOAD_URL = (BINTRAY_BASE_URL +
@@ -32,6 +33,8 @@ BINTRAY_VERSION_URL = (BINTRAY_BASE_URL +
                        'versions/'
                        '{version}')
 
+# Interval between two retries (in seconds).
+RETRY_INTERVAL = 10
 
 
 def bintray_upload(args):
@@ -49,7 +52,6 @@ def bintray_upload(args):
                                     package = args.package,
                                     version = args.version,
                                     file_path = args.filepath)
-    print(url)
 
     with open(args.file_input, 'rb') as f:
         response = requests.put(url,
@@ -73,7 +75,6 @@ def bintray_publish(args):
                                      repo = args.repo,
                                      package = args.package,
                                      version = args.version)
-    print(url)
 
     response = requests.post(url,
                              json = json,
@@ -93,7 +94,6 @@ def bintray_file_in_download_list(args):
     url = BINTRAY_DOWNLOAD_LIST_URL.format(subject = args.subject,
                                            repo = args.repo,
                                            file_path = args.filepath)
-    print(url)
 
     response = requests.put(url,
                             json = json,
@@ -111,7 +111,6 @@ def delete_version(args):
                                      repo = args.repo,
                                      package = args.package,
                                      version = args.version)
-    print(url)
 
     response = requests.delete(url,
                                auth = (args.username,
@@ -141,7 +140,6 @@ def update_version(args):
                                      repo = args.repo,
                                      package = args.package,
                                      version = args.version)
-    print(url)
 
     response = requests.patch(url,
                               json = json,
@@ -153,6 +151,22 @@ def update_version(args):
                            .format(response.status_code))
 
 
+def retries(function, args):
+    max_retries = args.retries
+    nb_retries = 0
+    while True:
+        try:
+            function(args)
+        except RuntimeError as error:
+            nb_retries = nb_retries + 1
+            print('ERROR: {0}. Retry {1}.'.format(error, nb_retries))
+            if nb_retries > max_retries:
+                raise RuntimeError('Number of retries exceeded ({0}). '
+                                   'Aborting.'.format(max_retries))
+            time.sleep(RETRY_INTERVAL)
+        else:
+            return True
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -162,6 +176,9 @@ def parse_arguments():
     parser.add_argument('--api_key', type = str,
                         help = 'bintray API key (default: value from '
                                '"bintray_api_key" environment variable.')
+    parser.add_argument('--retries', type = int, default = 3,
+                        help = 'number of retries before bailing out '
+                               '(default: 3).')
 
     subparsers = parser.add_subparsers(
         title='subcommands',
@@ -291,11 +308,12 @@ def parse_arguments():
     if not args.subject:
         args.subject = args.username
 
-    args.func(args)
+    return args
 
 
 def main():
-    parse_arguments()
+    args = parse_arguments()
+    retries(args.func, args)
 
 
 if __name__ == '__main__':

@@ -130,16 +130,16 @@ def get_arch_from_python_interpreter():
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('--msvc', type = int, choices = [11, 12, 14],
-                        default = 12, help = 'Choose the Microsoft Visual '
+                        default = 12, help = 'choose the Microsoft Visual '
                         'Studio version (default: %(default)s).' )
     parser.add_argument('--arch', type = int, choices = [32, 64],
-                        help = 'Force architecture to 32 or 64 bits on '
+                        help = 'force architecture to 32 or 64 bits on '
                         'Windows (default: python interpreter architecture).' )
     parser.add_argument('--python2', type = str,
-                        help = 'Set python2 folder (default: C:\Python27 or '
+                        help = 'set python2 folder (default: C:\Python27 or '
                         'C:\Python27-64 depending on architecture)')
     parser.add_argument('--python3', type = str,
-                        help = 'Set python3 folder (default: C:\Python34 or '
+                        help = 'set python3 folder (default: C:\Python34 or '
                         'C:\Python34-64 depending on architecture)')
 
     args = parser.parse_args()

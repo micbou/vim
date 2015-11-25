@@ -47,7 +47,7 @@ def test_vim(args):
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('--msvc', type = int, choices = [11, 12, 14],
-                        default = 12, help = 'Choose the Microsoft Visual '
+                        default = 12, help = 'choose the Microsoft Visual '
                         'Studio version (default: %(default)s).' )
 
     return parser.parse_args()
