@@ -1,6 +1,7 @@
 version: "{build}"
 skip_non_tags: true
 environment:
+    bintray_username: micbou
     bintray_api_key:
         secure: B1GlaWpEZ4f1oU6Hfi0XKe/LUoqJgJVUtXP8QxENtezlyNDqvRMfw1gX7btpEYk9
     matrix:
@@ -37,6 +38,7 @@ build_script:
     - python appveyor\build.py --msvc %msvc% --arch %arch%
     - appveyor\artifact.bat %arch% %appveyor_repo_tag_name%
     - python appveyor\deploy.py %artifact%
+    - set vim_description=Vim %version% 32-bit and 64-bit for Windows with python 2.7 and python 3.4 support. Compiled with MSVC %msvc%.
 test_script:
     - python appveyor\test.py --msvc %msvc%
 artifacts:
@@ -44,7 +46,7 @@ artifacts:
       name: vim
 deploy:
     - release: $(appveyor_repo_tag_name)
-      description: 'Vim $(version) 32-bit and 64-bit for Windows with python 2.7 and python 3.4 support. Compiled with MSVC $(msvc).'
+      description: $(vim_description)
       provider: GitHub
       auth_token:
           secure: gm7NWc/q5jrfYIipgRGs8Xd8+4BmWeEAEgfnCJYcu2EpgFdAxIMcT6ixBCE2gg5F
@@ -57,4 +59,7 @@ deploy:
           msvc: 12
 # Deploy to Bintray
 after_deploy:
-    - python appveyor\bintray.py micbou generic vim %appveyor_repo_tag_name% nsis\%artifact% micbou %bintray_api_key% --publish --override
+    - python appveyor\bintray.py upload generic vim %appveyor_repo_tag_name% nsis\%artifact% --override
+    - python appveyor\bintray.py update-version generic vim %appveyor_repo_tag_name% "%vim_description%" --vcs-tag %appveyor_repo_tag_name%
+    - python appveyor\bintray.py publish generic vim %appveyor_repo_tag_name%
+    - python appveyor\bintray.py download-list generic %artifact% add
