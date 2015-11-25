@@ -1,6 +1,8 @@
 version: "{build}"
 skip_non_tags: true
 environment:
+    bintray_api_key:
+        secure: B1GlaWpEZ4f1oU6Hfi0XKe/LUoqJgJVUtXP8QxENtezlyNDqvRMfw1gX7btpEYk9
     matrix:
         #- arch: 32
         #  msvc: 11
@@ -26,20 +28,26 @@ install:
     - curl -fsSL -o upx391w.zip http://upx.sourceforge.net/download/upx391w.zip
     - 7z x upx391w.zip
     - set PATH=%APPVEYOR_BUILD_FOLDER%\upx391w;%PATH%
+    # Requirement for bintray script
+    - ps: (new-object net.webclient).DownloadFile('https://raw.github.com/pypa/pip/master/contrib/get-pip.py', 'C:\get-pip.py')
+    - python C:\get-pip.py
+    - set PATH=C:\Python27\Scripts;%PATH%
+    - pip install requests
 build_script:
-    - python build.py --msvc %msvc% --arch %arch%
-    - python deploy.py %arch% %appveyor_repo_tag_name%
+    - python appveyor\build.py --msvc %msvc% --arch %arch%
+    - appveyor\artifact.bat %arch% %appveyor_repo_tag_name%
+    - python appveyor\deploy.py %artifact%
 test_script:
-    - python test.py --msvc %msvc%
+    - python appveyor\test.py --msvc %msvc%
 artifacts:
-    - path: nsis\vim*.exe
+    - path: nsis\$(artifact)
       name: vim
 deploy:
     - release: $(appveyor_repo_tag_name)
       description: 'Vim for Windows'
       provider: GitHub
       auth_token:
-        secure: gm7NWc/q5jrfYIipgRGs8Xd8+4BmWeEAEgfnCJYcu2EpgFdAxIMcT6ixBCE2gg5F
+          secure: gm7NWc/q5jrfYIipgRGs8Xd8+4BmWeEAEgfnCJYcu2EpgFdAxIMcT6ixBCE2gg5F
       artifact: vim
       draft: false
       prerelease: false
@@ -47,3 +55,6 @@ deploy:
           branch: build
           appveyor_repo_tag: true
           msvc: 12
+# Deploy to Bintray
+after_deploy:
+    - python appveyor\bintray.py micbou generic vim %appveyor_repo_tag_name% nsis\%artifact% micbou %bintray_api_key% --publish --override

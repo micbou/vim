@@ -5,28 +5,21 @@ import os
 import subprocess
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath( __file__ ))
-SOURCES_DIR = os.path.join(SCRIPT_DIR, 'src')
+ROOT_DIR = os.path.join(SCRIPT_DIR, '..')
+SOURCES_DIR = os.path.join(ROOT_DIR, 'src')
 TESTS_DIR = os.path.join(SOURCES_DIR, 'testdir')
 
-MSVC11_ROOT_DIR = r'C:\Program Files (x86)\Microsoft Visual Studio 11.0'
-MSVC12_ROOT_DIR = r'C:\Program Files (x86)\Microsoft Visual Studio 12.0'
-MSVC14_ROOT_DIR = r'C:\Program Files (x86)\Microsoft Visual Studio 14.0'
-
-MSVC_BIN_DIR = os.path.join('VC', 'bin')
+MSVC_BIN_DIR = os.path.join('..', '..', 'VC', 'bin')
 
 
 def get_msvc_dir(args):
     if args.msvc == 11:
-        msvc_dir = os.path.join(MSVC11_ROOT_DIR, MSVC_BIN_DIR)
+        return os.path.join(os.environ['VS110COMNTOOLS'], MSVC_BIN_DIR)
     if args.msvc == 12:
-        msvc_dir = os.path.join(MSVC12_ROOT_DIR, MSVC_BIN_DIR)
+        return os.path.join(os.environ['VS120COMNTOOLS'], MSVC_BIN_DIR)
     if args.msvc == 14:
-        msvc_dir = os.path.join(MSVC14_ROOT_DIR, MSVC_BIN_DIR)
-    if not os.path.exists(msvc_dir):
-        raise RuntimeError('{0} folder does not exist. Did you install '
-                           'Microsoft Visual C++ {1}?'.format(msvc_dir,
-                                                              args.msvc))
-    return msvc_dir
+        return os.path.join(os.environ['VS140COMNTOOLS'], MSVC_BIN_DIR)
+    raise RuntimeError('msvc parameter should be 11, 12, or 14.')
 
 
 def test_vim(args):

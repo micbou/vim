@@ -8,9 +8,10 @@ import subprocess
 from distutils.spawn import find_executable
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath( __file__ ))
-SOURCES_DIR = os.path.join(SCRIPT_DIR, 'src')
-RUNTIME_DIR = os.path.join(SCRIPT_DIR, 'runtime')
-NSIS_DIR = os.path.join(SCRIPT_DIR, 'nsis')
+ROOT_DIR = os.path.join(SCRIPT_DIR, '..')
+SOURCES_DIR = os.path.join(ROOT_DIR, 'src')
+RUNTIME_DIR = os.path.join(ROOT_DIR, 'runtime')
+NSIS_DIR = os.path.join(ROOT_DIR, 'nsis')
 DOC_DIR = os.path.join(RUNTIME_DIR, 'doc')
 XXD_DIR = os.path.join(SOURCES_DIR, 'xxd')
 GVIM_EXT_DIR = os.path.join(SOURCES_DIR, 'GvimExt')
@@ -32,15 +33,8 @@ def generate_uganda_file():
 
 
 def rename_vim_installer(args):
-    arch_name = ('x64' if args.arch == 64 else
-                 'x86')
-    # Manage case where tag is in vX.Y.Z form.
-    if args.tag.startswith('v'):
-        args.tag = args.tag[1:]
-    installer_name = 'vim{0}-{1}.exe'.format(args.tag, arch_name)
-
     os.rename(GVIM_INSTALLER_PATH,
-              os.path.join(NSIS_DIR, installer_name))
+              os.path.join(NSIS_DIR, args.installer))
 
 
 def generate_vim_installer(args):
@@ -80,15 +74,10 @@ def generate_vim_installer(args):
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('arch', type = int, choices = [32, 64],
-                        help = 'Architecture used to build Vim '
-                               '(32 or 64 bits).')
-    parser.add_argument('tag', type = str,
-                        help = 'Tag for current build.')
+    parser.add_argument('installer', type = str,
+                        help = 'Vim installer name.')
 
-    args = parser.parse_args()
-
-    return args
+    return parser.parse_args()
 
 
 def main():

@@ -6,7 +6,8 @@ import subprocess
 import platform
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath( __file__ ))
-SOURCES_DIR = os.path.join(SCRIPT_DIR, 'src')
+ROOT_DIR = os.path.join(SCRIPT_DIR, '..')
+SOURCES_DIR = os.path.join(ROOT_DIR, 'src')
 
 MSVC_BIN_DIR = os.path.join('..', '..', 'VC', 'bin')
 VC_VARS_SCRIPT = os.path.join('..', '..', 'VC', 'vcvarsall.bat')
