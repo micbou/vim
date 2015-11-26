@@ -38,7 +38,7 @@ install:
 build_script:
     - python appveyor\build.py --msvc %msvc% --arch %arch% --credit "%vim_compilation_credit%"
     - appveyor\artifact.bat %arch% %appveyor_repo_tag_name%
-    - python appveyor\deploy.py %artifact%
+    - python appveyor\package.py %artifact%
     - set vim_description=Vim %version% 32-bit and 64-bit for Windows with python 2.7 and python 3.4 support. Compiled with MSVC %msvc%.
 test_script:
     - python appveyor\test.py --msvc %msvc%

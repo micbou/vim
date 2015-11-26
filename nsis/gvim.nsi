@@ -34,7 +34,7 @@
 !include x64.nsh
 
 Name "Vim ${VER_MAJOR}.${VER_MINOR}"
-OutFile gvim-installer.exe
+OutFile gvim-package.exe
 CRCCheck force
 SetCompressor lzma
 SetDatablockOptimize on

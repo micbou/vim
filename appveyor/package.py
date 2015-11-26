@@ -16,12 +16,12 @@ DOC_DIR = os.path.join(RUNTIME_DIR, 'doc')
 XXD_DIR = os.path.join(SOURCES_DIR, 'xxd')
 GVIM_EXT_DIR = os.path.join(SOURCES_DIR, 'GvimExt')
 GVIM_NSIS_PATH = os.path.join(NSIS_DIR, 'gvim.nsi')
-GVIM_INSTALLER_PATH = os.path.join(NSIS_DIR, 'gvim-installer.exe')
+GVIM_PACKAGE_PATH = os.path.join(NSIS_DIR, 'gvim-package.exe')
 
 
 def generate_uganda_file():
     # Uganda manual is written in Vim doc so we need to apply some formatting
-    # to it for the installer.
+    # to it for the package.
     uganda_path = os.path.join(DOC_DIR, 'uganda.txt')
     nsis_uganda_path = os.path.join(DOC_DIR, 'uganda.nsis.txt')
     with open(uganda_path, "r") as uganda_file:
@@ -32,12 +32,12 @@ def generate_uganda_file():
                                           line))
 
 
-def rename_vim_installer(args):
-    os.rename(GVIM_INSTALLER_PATH,
-              os.path.join(NSIS_DIR, args.installer))
+def rename_package(args):
+    os.rename(GVIM_PACKAGE_PATH,
+              os.path.join(NSIS_DIR, args.package))
 
 
-def generate_vim_installer(args):
+def generate_package(args):
     generate_uganda_file()
 
     shutil.copy(os.path.join(SOURCES_DIR, 'install.exe'),
@@ -69,20 +69,20 @@ def generate_vim_installer(args):
 
     subprocess.check_call([makensis, GVIM_NSIS_PATH])
 
-    rename_vim_installer(args)
+    rename_package(args)
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('installer', type = str,
-                        help = 'Vim installer name.')
+    parser.add_argument('package', type = str,
+                        help = 'Vim package name.')
 
     return parser.parse_args()
 
 
 def main():
     args = parse_arguments()
-    generate_vim_installer(args)
+    generate_package(args)
 
 
 if __name__ == '__main__':
