@@ -2950,6 +2950,14 @@ ins_compl_show_pum(void)
 	/* Need to build the popup menu list. */
 	compl_match_arraysize = 0;
 	compl = compl_first_match;
+	/*
+	 * If it's user complete function and refresh_always,
+	 * not use "compl_leader" as prefix filter.
+	 */
+	if (ins_compl_need_restart()){
+	    vim_free(compl_leader);
+	    compl_leader = NULL;
+	}
 	if (compl_leader != NULL)
 	    lead_len = (int)STRLEN(compl_leader);
 	do
@@ -3501,11 +3509,9 @@ ins_compl_new_leader(void)
 	spell_bad_len = 0;	/* need to redetect bad word */
 #endif
 	/*
-	 * Matches were cleared, need to search for them now.  First display
-	 * the changed text before the cursor.  Set "compl_restarting" to
-	 * avoid that the first match is inserted.
+	 * Matches were cleared, need to search for them now.
+	 * Set "compl_restarting" to avoid that the first match is inserted.
 	 */
-	update_screen(0);
 #ifdef FEAT_GUI
 	if (gui.in_use)
 	{
@@ -3526,8 +3532,9 @@ ins_compl_new_leader(void)
     /* Show the popup menu with a different set of matches. */
     ins_compl_show_pum();
 
-    /* Don't let Enter select the original text when there is no popup menu. */
-    if (compl_match_array == NULL)
+    /* Don't let Enter select the original text when there is no popup menu.
+     * Don't let Enter select when use user function and refresh_always is set */
+    if (compl_match_array == NULL || ins_compl_need_restart())
 	compl_enter_selects = FALSE;
 }
 
@@ -3562,15 +3569,11 @@ ins_compl_addleader(int c)
 	(*mb_char2bytes)(c, buf);
 	buf[cc] = NUL;
 	ins_char_bytes(buf, cc);
-	if (compl_opt_refresh_always)
-	    AppendToRedobuff(buf);
     }
     else
 #endif
     {
 	ins_char(c);
-	if (compl_opt_refresh_always)
-	    AppendCharToRedobuff(c);
     }
 
     /* If we didn't complete finding matches we must search again. */
@@ -3580,14 +3583,11 @@ ins_compl_addleader(int c)
     /* When 'always' is set, don't reset compl_leader. While completing,
      * cursor doesn't point original position, changing compl_leader would
      * break redo. */
-    if (!compl_opt_refresh_always)
-    {
-	vim_free(compl_leader);
-	compl_leader = vim_strnsave(ml_get_curline() + compl_col,
-				     (int)(curwin->w_cursor.col - compl_col));
-	if (compl_leader != NULL)
-	    ins_compl_new_leader();
-    }
+    vim_free(compl_leader);
+    compl_leader = vim_strnsave(ml_get_curline() + compl_col,
+	    (int)(curwin->w_cursor.col - compl_col));
+    if (compl_leader != NULL)
+	ins_compl_new_leader();
 }
 
 /*
@@ -3597,6 +3597,10 @@ ins_compl_addleader(int c)
     static void
 ins_compl_restart(void)
 {
+    /* update screen before restart.
+     * so if complete is blocked,
+     * will stay to the last popup menu and reduce the flicker */
+    update_screen(0);
     ins_compl_free();
     compl_started = FALSE;
     compl_matches = 0;
