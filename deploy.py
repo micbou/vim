@@ -36,7 +36,7 @@ def deploy(args):
     subprocess.check_output([git, 'push'])
 
     # Push the tag
-    subprocess.check_output([git, 'push', '--tags'])
+    subprocess.check_output([git, 'push', 'origin', latest_tag])
 
 
 def parse_arguments():
