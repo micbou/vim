@@ -116,7 +116,7 @@ def build_vim(args, gui = True):
     clean_cmd.extend(['&', nmake, '/f', 'Make_mvc.mak', 'clean'])
     clean_cmd.extend(build_args)
 
-    subprocess.call(clean_cmd, env = new_env)
+    subprocess.check_call(clean_cmd, env = new_env)
 
     build_cmd = vc_vars_cmd
     build_cmd.extend(['&', nmake, '/f', 'Make_mvc.mak'])
