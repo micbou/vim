@@ -109,17 +109,17 @@ def build_vim(args, gui = True):
 
     build_args = get_build_args(args, gui)
 
-    clean_cmd = [nmake, '/f', 'Make_mvc.mak', 'clean']
+    vc_vars_script_path = os.path.join(msvc_dir, VC_VARS_SCRIPT)
+    vc_vars_cmd = [vc_vars_script_path, get_vc_mod(args.arch)]
+
+    clean_cmd = vc_vars_cmd
+    clean_cmd.extend(['&', nmake, '/f', 'Make_mvc.mak', 'clean'])
     clean_cmd.extend(build_args)
 
     subprocess.call(clean_cmd, env = new_env)
 
-    vc_vars_script_path = os.path.join(msvc_dir, VC_VARS_SCRIPT)
-
-    build_cmd = [vc_vars_script_path, get_vc_mod(args.arch)]
-    build_cmd.extend(['&',
-                      nmake, '/f',
-                      'Make_mvc.mak'])
+    build_cmd = vc_vars_cmd
+    build_cmd.extend(['&', nmake, '/f', 'Make_mvc.mak'])
     build_cmd.extend(build_args)
 
     subprocess.check_call(build_cmd, env = new_env)
