@@ -3482,11 +3482,16 @@ ins_compl_new_leader()
 	spell_bad_len = 0;	/* need to redetect bad word */
 #endif
 	/*
-	 * Matches were cleared, need to search for them now.  First display
-	 * the changed text before the cursor.  Set "compl_restarting" to
-	 * avoid that the first match is inserted.
+	 * Matches were cleared, need to search for them now.
+	 * If it's user complete function and refresh_always,
+	 * not use "compl_leader" as prefix filter.
+	 * Set "compl_restarting" to avoid that the first match is inserted.
 	 */
-	update_screen(0);
+	if ((ctrl_x_mode == CTRL_X_FUNCTION || ctrl_x_mode == CTRL_X_OMNI)
+		&& compl_opt_refresh_always){
+	    vim_free(compl_leader);
+	    compl_leader = NULL;
+	}
 #ifdef FEAT_GUI
 	if (gui.in_use)
 	{
@@ -3544,14 +3549,16 @@ ins_compl_addleader(c)
 	(*mb_char2bytes)(c, buf);
 	buf[cc] = NUL;
 	ins_char_bytes(buf, cc);
-	if (compl_opt_refresh_always)
+	if ((ctrl_x_mode == CTRL_X_FUNCTION || ctrl_x_mode == CTRL_X_OMNI)
+		&& compl_opt_refresh_always)
 	    AppendToRedobuff(buf);
     }
     else
 #endif
     {
 	ins_char(c);
-	if (compl_opt_refresh_always)
+	if ((ctrl_x_mode == CTRL_X_FUNCTION || ctrl_x_mode == CTRL_X_OMNI)
+		&& compl_opt_refresh_always)
 	    AppendCharToRedobuff(c);
     }
 
@@ -3562,14 +3569,11 @@ ins_compl_addleader(c)
     /* When 'always' is set, don't reset compl_leader. While completing,
      * cursor doesn't point original position, changing compl_leader would
      * break redo. */
-    if (!compl_opt_refresh_always)
-    {
-	vim_free(compl_leader);
-	compl_leader = vim_strnsave(ml_get_curline() + compl_col,
-				     (int)(curwin->w_cursor.col - compl_col));
-	if (compl_leader != NULL)
-	    ins_compl_new_leader();
-    }
+    vim_free(compl_leader);
+    compl_leader = vim_strnsave(ml_get_curline() + compl_col,
+	    (int)(curwin->w_cursor.col - compl_col));
+    if (compl_leader != NULL)
+	ins_compl_new_leader();
 }
 
 /*
@@ -3579,6 +3583,10 @@ ins_compl_addleader(c)
     static void
 ins_compl_restart()
 {
+    /* update screen before restart.
+     * so if complete is blocked,
+     * will stay to the last popup menu and reduce flick */
+    update_screen(0);
     ins_compl_free();
     compl_started = FALSE;
     compl_matches = 0;
