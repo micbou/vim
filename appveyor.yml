@@ -35,6 +35,10 @@ install:
     - python C:\get-pip.py
     - set PATH=C:\Python27\Scripts;%PATH%
     - pip install requests
+    # Fix test86 failure introduced by python 2.7.11
+    # TODO: check if this is still needed when python 2.7.12 is released.
+    - reg copy HKLM\SOFTWARE\Python\PythonCore\2.7 HKLM\SOFTWARE\Python\PythonCore\2.7-32 /s /reg:32
+    - reg copy HKLM\SOFTWARE\Python\PythonCore\2.7 HKLM\SOFTWARE\Python\PythonCore\2.7-32 /s /reg:64
 build_script:
     - python appveyor\build.py --msvc %msvc% --arch %arch% --credit "%vim_compilation_credit%"
     - appveyor\variables.bat
