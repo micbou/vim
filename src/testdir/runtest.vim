@@ -33,12 +33,23 @@ if &lines < 24 || &columns < 80
   cquit
 endif
 
+" For consistency run all tests with 'nocompatible' set.
+" This also enables use of line continuation.
+set nocp viminfo+=nviminfo
+
+" Avoid stopping at the "hit enter" prompt
+set nomore
+
+" Output all messages in English.
+lang mess C
+
 " Source the test script.  First grab the file name, in case the script
 " navigates away.
 let testname = expand('%')
 let done = 0
 let fail = 0
 let errors = []
+let messages = []
 try
   source %
 catch
@@ -57,6 +68,7 @@ for test in tests
     call SetUp()
   endif
 
+  call add(messages, 'Executing ' . test)
   let done += 1
   try
     exe 'call ' . test
@@ -92,9 +104,20 @@ if len(errors) > 0
   write
 endif
 
-echo 'Executed ' . done . (done > 1 ? ' tests': ' test')
+let message = 'Executed ' . done . (done > 1 ? ' tests': ' test')
+echo message
+call add(messages, message)
 if fail > 0
-  echo fail . ' FAILED'
+  let message = fail . ' FAILED'
+  echo message
+  call add(messages, message)
 endif
+
+" Append messages to "messages"
+split messages
+call append(line('$'), '')
+call append(line('$'), 'From ' . testname . ':')
+call append(line('$'), messages)
+write
 
 qall!
