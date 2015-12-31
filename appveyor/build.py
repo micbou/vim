@@ -4,10 +4,14 @@ import argparse
 import os
 import subprocess
 import platform
+import re
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath( __file__ ))
 ROOT_DIR = os.path.join(SCRIPT_DIR, '..')
 SOURCES_DIR = os.path.join(ROOT_DIR, 'src')
+
+MAKE_PATH = os.path.join(SOURCES_DIR, 'Make_mvc.mak')
+APPVEYOR_MAKE_PATH = os.path.join(SOURCES_DIR, 'Make_mvc_appveyor.mak')
 
 MSVC_BIN_DIR = os.path.join('..', '..', 'VC', 'bin')
 VC_VARS_SCRIPT = os.path.join('..', '..', 'VC', 'vcvarsall.bat')
@@ -113,13 +117,13 @@ def build_vim(args, gui = True):
     vc_vars_cmd = [vc_vars_script_path, get_vc_mod(args.arch)]
 
     clean_cmd = vc_vars_cmd
-    clean_cmd.extend(['&', nmake, '/f', 'Make_mvc.mak', 'clean'])
+    clean_cmd.extend(['&', nmake, '/f', APPVEYOR_MAKE_PATH, 'clean'])
     clean_cmd.extend(build_args)
 
     subprocess.check_call(clean_cmd, env = new_env)
 
     build_cmd = vc_vars_cmd
-    build_cmd.extend(['&', nmake, '/f', 'Make_mvc.mak'])
+    build_cmd.extend(['&', nmake, '/f', APPVEYOR_MAKE_PATH])
     build_cmd.extend(build_args)
 
     subprocess.check_call(build_cmd, env = new_env)
@@ -129,6 +133,19 @@ def get_arch_from_python_interpreter():
     if platform.architecture()[0] == '64bit':
         return 64
     return 32
+
+
+def remove_progress_bars():
+    # Progress bars from the build are messing up the logs on AppVeyor.
+    # Create a new make file that remove them.
+    with open(MAKE_PATH, "r") as make_file:
+        lines = make_file.readlines()
+    with open(APPVEYOR_MAKE_PATH, "w") as appveyor_make_file:
+        for line in lines:
+            appveyor_make_file.write(re.sub(r'\$\(LINKARGS2\)',
+                                            r'$(LINKARGS2) | '
+                                            r"sed -e 's#.*\\r.*##'",
+                                            line))
 
 
 def parse_arguments():
@@ -158,6 +175,7 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
+    remove_progress_bars()
     build_vim(args, gui = False)
     build_vim(args)
 
