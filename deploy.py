@@ -19,7 +19,7 @@ def deploy(args):
     # Switch to master branch
     subprocess.check_call([git, 'checkout', 'master'])
 
-    # Fetch and merge upstream
+    # Fetch and merge upstream master branch
     subprocess.check_call([git, 'fetch', 'upstream'])
     subprocess.check_call([git, 'merge', 'upstream/master', '--no-edit'])
 
@@ -30,13 +30,18 @@ def deploy(args):
                                           latest_commit])
 
     # Set this tag to the last commit
-    subprocess.check_output([git, 'tag', '-f', latest_tag])
+    subprocess.check_call([git, 'tag', '-f', latest_tag])
 
     # Push the changes
-    subprocess.check_output([git, 'push'])
+    subprocess.check_call([git, 'push'])
+
+    # Remove upstream tag in case it already exists
+    if len(subprocess.check_output([git, 'ls-remote', 'origin', latest_tag])):
+      subprocess.check_call([git, 'push', 'origin',
+                             ':{0}'.format( latest_tag )])
 
     # Push the tag
-    subprocess.check_output([git, 'push', 'origin', latest_tag])
+    subprocess.check_call([git, 'push', 'origin', latest_tag])
 
 
 def parse_arguments():
