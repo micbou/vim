@@ -116,11 +116,11 @@ SCRIPTS_ALL = \
 	test_qf_title.out \
 	test_ruby.out \
 	test_search_mbyte.out \
-	test_set.out \
 	test_signs.out \
 	test_tagcase.out \
 	test_textobjects.out \
 	test_utf8.out \
+	test_wordcount.out \
 	test_writefile.out
 
 

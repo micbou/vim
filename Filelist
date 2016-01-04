@@ -191,7 +191,7 @@ SRC_UNIX =	\
 		src/gui_gtk_f.c \
 		src/gui_gtk_f.h \
 		src/gui_gtk_x11.c \
-		src/gui_gtk_gresources.xml \
+		src/gui_gtk_res.xml \
 		src/gui_motif.c \
 		src/gui_xmdlg.c \
 		src/gui_xmebw.c \
@@ -355,6 +355,7 @@ SRC_DOS =	\
 		src/xxd/Make_ming.mak \
 		src/xxd/Make_mvc.mak \
 		nsis/gvim.nsi \
+		nsis/gvim_version.nsh \
 		nsis/README.txt \
 		uninstal.txt \
 		src/VisVim/Commands.cpp \
@@ -702,6 +703,7 @@ EXTRA =		\
 		runtime/vimlogo.xpm \
 		src/swis.s \
 		src/tee/Makefile \
+		src/tee/Make_mvc.mak \
 		src/tee/tee.c \
 		csdpmi4b.zip \
 
