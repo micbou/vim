@@ -22,14 +22,20 @@ matrix:
     allow_failures:
         - msvc: 14
 install:
+    # Download and uncompress Lua
+    # We need to use Powershell because % character cannot be escaped in CMD on AppVeyor and URL contains one.
+    - ps: rm alias:curl
+    - ps: curl -fssL -o lua.zip http://sourceforge.net/projects/luabinaries/files/5.3.2/Windows%20Libraries/Dynamic/lua-5.3.2_Win"$env:arch"_dllw4_lib.zip/download
+    - 7z x lua.zip -oC:\Lua > nul
+    - set PATH=C:\Lua;%PATH%
     # Install NSIS and update PATH
     - curl -fsSL -o nsis-3.0b2-setup.exe http://prdownloads.sourceforge.net/nsis/nsis-3.0b2-setup.exe
     - nsis-3.0b2-setup.exe /S
     - set PATH=C:\Program Files (x86)\NSIS;%PATH%
     # Install UPX
     - curl -fsSL -o upx391w.zip http://upx.sourceforge.net/download/upx391w.zip
-    - 7z x upx391w.zip
-    - set PATH=%APPVEYOR_BUILD_FOLDER%\upx391w;%PATH%
+    - 7z x upx391w.zip -oC:\UPX > nul
+    - set PATH=C:\UPX;%PATH%
     # Requirement for bintray script
     - ps: (new-object net.webclient).DownloadFile('https://raw.github.com/pypa/pip/master/contrib/get-pip.py', 'C:\get-pip.py')
     - python C:\get-pip.py
