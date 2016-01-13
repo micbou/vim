@@ -18,9 +18,6 @@ environment:
           msvc: 12
         - arch: 64
           msvc: 14
-matrix:
-    allow_failures:
-        - msvc: 14
 install:
     # Download and uncompress Lua
     # We need to use Powershell because % character cannot be escaped in CMD on AppVeyor and URL contains one.
