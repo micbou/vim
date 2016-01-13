@@ -54,6 +54,12 @@ def get_pythons_build_args(args):
             'PYTHON3={0}'.format(python3_path)]
 
 
+def get_lua_build_args(args):
+    return ['LUA={0}'.format(args.lua_path),
+            'LUA_VER={0}'.format(args.lua_version),
+            'DYNAMIC_LUA=yes']
+
+
 def get_msvc_dir(args):
     if args.msvc == 11:
         return os.path.join(os.environ['VS110COMNTOOLS'], MSVC_BIN_DIR)
@@ -95,6 +101,7 @@ def get_build_args(args, gui=True):
                            'USERDOMAIN='])
 
     build_args.extend(get_pythons_build_args(args))
+    build_args.extend(get_lua_build_args(args))
 
     return build_args
 
@@ -166,6 +173,10 @@ def parse_arguments():
     parser.add_argument('--python3', type = str,
                         help = 'set python3 folder (default: C:\Python34 or '
                         'C:\Python34-x64 depending on architecture)')
+    parser.add_argument('--lua-path', type = str, default = 'C:\Lua',
+                        help = 'set lua folder (default: C:\Lua)')
+    parser.add_argument('--lua-version', type = int, default = 53,
+                        help = 'set lua version (default: 53)')
     parser.add_argument('--credit', type = str,
                         help = 'replace username@userdomain by a custom '
                                'string in compilation credit.')
