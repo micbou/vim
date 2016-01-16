@@ -159,6 +159,11 @@ def remove_progress_bars():
                                             line))
 
 
+def clean_up():
+    if os.path.isfile(APPVEYOR_MAKE_PATH):
+        os.remove(APPVEYOR_MAKE_PATH)
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('--msvc', type = int, choices = [11, 12, 14],
@@ -193,6 +198,7 @@ def main():
     remove_progress_bars()
     build_vim(args, gui = False)
     build_vim(args)
+    clean_up()
 
 
 if __name__ == '__main__':
