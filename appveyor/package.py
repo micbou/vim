@@ -67,7 +67,9 @@ def generate_package(args):
         raise RuntimeError('Cannot find makensis executable. '
                            'Did you install NSIS?')
 
-    subprocess.check_call([makensis, GVIM_NSIS_PATH])
+    vimrt = '/DVIMRT={0}'.format( os.path.join( '..', 'runtime' ) )
+
+    subprocess.check_call([makensis, vimrt, GVIM_NSIS_PATH])
 
     rename_package(args)
 
