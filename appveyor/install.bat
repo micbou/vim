@@ -20,7 +20,7 @@ copy c:\gettext\libintl-8.dll %APPVEYOR_BUILD_FOLDER%\runtime
 copy c:\gettext\libiconv-2.dll %APPVEYOR_BUILD_FOLDER%\runtime
 :: Copy libwinpthread only for 64-bits
 if %arch% == 64 (
-    copy c:\gettext\libwinpthread-1.dll %APPVEYOR_BUILD_FOLDER\runtime
+    copy c:\gettext\libwinpthread-1.dll %APPVEYOR_BUILD_FOLDER%\runtime
 )
 
 ::
@@ -34,8 +34,8 @@ set PATH=C:\Program Files (x86)\NSIS;%PATH%
 :: Install UPX.
 ::
 curl -fsSL -o upx391w.zip http://upx.sourceforge.net/download/upx391w.zip
-7z x upx391w.zip -oC:\UPX > nul
-set PATH=C:\UPX;%PATH%
+7z x upx391w.zip -oC:\ > nul
+set PATH=C:\upx391w;%PATH%
 
 ::
 :: Download and install pip for Bintray script requirement.

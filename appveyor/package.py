@@ -40,6 +40,12 @@ def rename_package(args):
 def generate_package(args):
     generate_uganda_file()
 
+    shutil.copy(os.path.join(ROOT_DIR, 'vimtutor.bat'),
+                os.path.join(ROOT_DIR, 'runtime'))
+
+    shutil.copy(os.path.join(ROOT_DIR, 'README.txt'),
+                os.path.join(ROOT_DIR, 'runtime'))
+
     shutil.copy(os.path.join(SOURCES_DIR, 'install.exe'),
                 os.path.join(SOURCES_DIR, 'installw32.exe'))
 
@@ -68,10 +74,25 @@ def generate_package(args):
                            'Did you install NSIS?')
 
     vimrt = '/DVIMRT={0}'.format( os.path.join( '..', 'runtime' ) )
+    outfile = '/XOutFile {0}'.format( 'gvim-package.exe' )
 
-    subprocess.check_call([makensis, vimrt, GVIM_NSIS_PATH])
+    subprocess.check_call([makensis,
+                           vimrt,
+                           GVIM_NSIS_PATH,
+                           outfile])
 
     rename_package(args)
+
+
+def clean_up():
+    remove_if_exists( os.path.join(ROOT_DIR, 'runtime', 'vimtutor.bat' ) )
+    remove_if_exists( os.path.join(ROOT_DIR, 'runtime', 'README.txt' ) )
+    remove_if_exists( os.path.join(GVIM_EXT_DIR, 'gvimext64.dll' ) )
+
+
+def remove_if_exists( path ):
+    if os.path.isfile( path ):
+        os.remove( path )
 
 
 def parse_arguments():
@@ -85,6 +106,7 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     generate_package(args)
+    clean_up()
 
 
 if __name__ == '__main__':
