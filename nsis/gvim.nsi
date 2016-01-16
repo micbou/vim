@@ -6,23 +6,26 @@
 # because uninstall deletes most files in $0.
 
 # Location of gvim_ole.exe, vimw32.exe, GvimExt/*, etc.
-!define VIMSRC "..\src"
-
-# Location of root files
-!define VIMROOT ".."
+!ifndef VIMSRC
+  !define VIMSRC "..\src"
+!endif
 
 # Location of runtime files
-!define VIMRUNTIME "..\runtime"
+!ifndef VIMRT
+  !define VIMRT ".."
+!endif
 
 # Location of extra tools: diff.exe
-!define VIMTOOLS ..\..
+!ifndef VIMTOOLS
+  !define VIMTOOLS ..\..
+!endif
 
 # Comment the next line if you don't have UPX.
 # Get it at http://upx.sourceforge.net
 !define HAVE_UPX
 
 # comment the next line if you do not want to add Native Language Support
-#!define HAVE_NLS
+!define HAVE_NLS
 
 !include gvim_version.nsh	# for version number
 
@@ -33,11 +36,12 @@
 !include x64.nsh
 
 Name "Vim ${VER_MAJOR}.${VER_MINOR}"
-OutFile gvim-package.exe
+OutFile gvim${VER_MAJOR}${VER_MINOR}.exe
 CRCCheck force
-SetCompressor lzma
+SetCompressor /SOLID lzma
 SetDatablockOptimize on
 RequestExecutionLevel highest
+XPStyle on
 
 ComponentText "This will install Vim ${VER_MAJOR}.${VER_MINOR} on your computer."
 DirText "Choose a directory to install Vim (should contain 'vim')"
@@ -52,14 +56,11 @@ UninstallIcon icons\vim_uninst_16c.ico
 # with the BringToFront.
 # BGGradient 004000 008200 FFFFFF
 LicenseText "You should read the following before installing:"
-LicenseData ${VIMRUNTIME}\doc\uganda.nsis.txt
+LicenseData ${VIMRT}\doc\uganda.nsis.txt
 
 !ifdef HAVE_UPX
   !packhdr temp.dat "upx --best --compress-icons=1 temp.dat"
 !endif
-
-SetCompressor /SOLID lzma
-XPStyle on
 
 # This adds '\vim' to the user choice automagically.  The actual value is
 # obtained below with ReadINIStr.
@@ -188,55 +189,55 @@ Section "Vim executables and runtime files"
 	File /oname=uninstal.exe ${VIMSRC}\uninstalw32.exe
 	File ${VIMSRC}\vimrun.exe
 	File /oname=xxd.exe ${VIMSRC}\xxdw32.exe
-	#File ${VIMTOOLS}\diff.exe
-	File ${VIMROOT}\vimtutor.bat
-	File ${VIMROOT}\README.txt
+	File ${VIMTOOLS}\diff.exe
+	File ${VIMRT}\vimtutor.bat
+	File ${VIMRT}\README.txt
 	File ..\uninstal.txt
-	File ${VIMRUNTIME}\*.vim
-	File ${VIMRUNTIME}\rgb.txt
+	File ${VIMRT}\*.vim
+	File ${VIMRT}\rgb.txt
 
 	SetOutPath $0\colors
-	File ${VIMRUNTIME}\colors\*.*
+	File ${VIMRT}\colors\*.*
 
 	SetOutPath $0\compiler
-	File ${VIMRUNTIME}\compiler\*.*
+	File ${VIMRT}\compiler\*.*
 
 	SetOutPath $0\doc
-	File ${VIMRUNTIME}\doc\*.txt
-	File ${VIMRUNTIME}\doc\tags
+	File ${VIMRT}\doc\*.txt
+	File ${VIMRT}\doc\tags
 
 	SetOutPath $0\ftplugin
-	File ${VIMRUNTIME}\ftplugin\*.*
+	File ${VIMRT}\ftplugin\*.*
 
 	SetOutPath $0\indent
-	File ${VIMRUNTIME}\indent\*.*
+	File ${VIMRT}\indent\*.*
 
 	SetOutPath $0\macros
-	File ${VIMRUNTIME}\macros\*.*
+	File ${VIMRT}\macros\*.*
 
 	SetOutPath $0\plugin
-	File ${VIMRUNTIME}\plugin\*.*
+	File ${VIMRT}\plugin\*.*
 
 	SetOutPath $0\autoload
-	File ${VIMRUNTIME}\autoload\*.*
+	File ${VIMRT}\autoload\*.*
 
 	SetOutPath $0\autoload\xml
-	File ${VIMRUNTIME}\autoload\xml\*.*
+	File ${VIMRT}\autoload\xml\*.*
 
 	SetOutPath $0\syntax
-	File ${VIMRUNTIME}\syntax\*.*
+	File ${VIMRT}\syntax\*.*
 
 	SetOutPath $0\spell
-	File ${VIMRUNTIME}\spell\*.txt
-	File ${VIMRUNTIME}\spell\*.vim
-	File ${VIMRUNTIME}\spell\*.spl
-	File ${VIMRUNTIME}\spell\*.sug
+	File ${VIMRT}\spell\*.txt
+	File ${VIMRT}\spell\*.vim
+	File ${VIMRT}\spell\*.spl
+	File ${VIMRT}\spell\*.sug
 
 	SetOutPath $0\tools
-	File ${VIMRUNTIME}\tools\*.*
+	File ${VIMRT}\tools\*.*
 
 	SetOutPath $0\tutor
-	File ${VIMRUNTIME}\tutor\*.*
+	File ${VIMRT}\tutor\*.*
 SectionEnd
 
 ##########################################################
@@ -353,12 +354,14 @@ SectionEnd
 		SectionIn 1 3
 
 		SetOutPath $0\lang
-		File /r ${VIMRUNTIME}\lang\*.*
+		File /r ${VIMRT}\lang\*.*
 		SetOutPath $0\keymap
-		File ${VIMRUNTIME}\keymap\README.txt
-		File ${VIMRUNTIME}\keymap\*.vim
+		File ${VIMRT}\keymap\README.txt
+		File ${VIMRT}\keymap\*.vim
 		SetOutPath $0
-		File ${VIMRUNTIME}\libintl.dll
+		File ${VIMRT}\libintl-8.dll
+		File ${VIMRT}\libiconv-2.dll
+		File /nonfatal ${VIMRT}\libwinpthread-1.dll
 	SectionEnd
 !endif
 

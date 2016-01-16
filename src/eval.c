@@ -115,6 +115,8 @@ static char *e_illvar = N_("E461: Illegal variable name: %s");
 static char *e_float_as_string = N_("E806: using Float as a String");
 #endif
 
+#define NAMESPACE_CHAR	(char_u *)"abglstvw"
+
 static dictitem_T	globvars_var;		/* variable used for g: */
 #define globvarht globvardict.dv_hashtab
 
@@ -812,6 +814,7 @@ static char_u *get_tv_string_buf_chk __ARGS((typval_T *varp, char_u *buf));
 static dictitem_T *find_var __ARGS((char_u *name, hashtab_T **htp, int no_autoload));
 static dictitem_T *find_var_in_ht __ARGS((hashtab_T *ht, int htname, char_u *varname, int no_autoload));
 static hashtab_T *find_var_ht __ARGS((char_u *name, char_u **varname));
+static funccall_T *get_funccal __ARGS((void));
 static void vars_clear_ext __ARGS((hashtab_T *ht, int free_val));
 static void delete_var __ARGS((hashtab_T *ht, hashitem_T *hi));
 static void list_one_var __ARGS((dictitem_T *v, char_u *prefix, int *first));
@@ -8128,7 +8131,7 @@ static struct fst
     {"cscope_connection",0,3, f_cscope_connection},
     {"cursor",		1, 3, f_cursor},
     {"deepcopy",	1, 2, f_deepcopy},
-    {"delete",		1, 1, f_delete},
+    {"delete",		1, 2, f_delete},
     {"did_filetype",	0, 0, f_did_filetype},
     {"diff_filler",	1, 1, f_diff_filler},
     {"diff_hlID",	2, 2, f_diff_hlID},
@@ -10388,10 +10391,37 @@ f_delete(argvars, rettv)
     typval_T	*argvars;
     typval_T	*rettv;
 {
+    char_u	nbuf[NUMBUFLEN];
+    char_u	*name;
+    char_u	*flags;
+
+    rettv->vval.v_number = -1;
     if (check_restricted() || check_secure())
-	rettv->vval.v_number = -1;
+	return;
+
+    name = get_tv_string(&argvars[0]);
+    if (name == NULL || *name == NUL)
+    {
+	EMSG(_(e_invarg));
+	return;
+    }
+
+    if (argvars[1].v_type != VAR_UNKNOWN)
+	flags = get_tv_string_buf(&argvars[1], nbuf);
     else
-	rettv->vval.v_number = mch_remove(get_tv_string(&argvars[0]));
+	flags = (char_u *)"";
+
+    if (*flags == NUL)
+	/* delete a file */
+	rettv->vval.v_number = mch_remove(name) == 0 ? 0 : -1;
+    else if (STRCMP(flags, "d") == 0)
+	/* delete an empty directory */
+	rettv->vval.v_number = mch_rmdir(name) == 0 ? 0 : -1;
+    else if (STRCMP(flags, "rf") == 0)
+	/* delete an directory recursively */
+	rettv->vval.v_number = delete_recursive(name);
+    else
+	EMSG2(_(e_invexpr2), flags);
 }
 
 /*
@@ -20665,7 +20695,17 @@ get_id_len(arg)
 
     /* Find the end of the name. */
     for (p = *arg; eval_isnamec(*p); ++p)
-	;
+    {
+	if (*p == ':')
+	{
+	    /* "s:" is start of "s:var", but "n:" is not and can be used in
+	     * slice "[n:]".  Also "xx:" is not a namespace. */
+	    len = (int)(p - *arg);
+	    if ((len == 1 && vim_strchr(NAMESPACE_CHAR, **arg) == NULL)
+		    || len > 1)
+		break;
+	}
+    }
     if (p == *arg)	    /* no name found */
 	return 0;
 
@@ -20765,6 +20805,7 @@ find_name_end(arg, expr_start, expr_end, flags)
     int		mb_nest = 0;
     int		br_nest = 0;
     char_u	*p;
+    int		len;
 
     if (expr_start != NULL)
     {
@@ -20798,6 +20839,15 @@ find_name_end(arg, expr_start, expr_end, flags)
 		if (*p == '\\' && p[1] != NUL)
 		    ++p;
 	    if (*p == NUL)
+		break;
+	}
+	else if (br_nest == 0 && mb_nest == 0 && *p == ':')
+	{
+	    /* "s:" is start of "s:var", but "n:" is not and can be used in
+	     * slice "[n:]".  Also "xx:" is not a namespace. */
+	    len = (int)(p - arg);
+	    if ((len == 1 && vim_strchr(NAMESPACE_CHAR, *arg) == NULL)
+		    || len > 1)
 		break;
 	}
 
@@ -21735,7 +21785,7 @@ find_var_ht(name, varname)
 
 	if (current_funccal == NULL)
 	    return &globvarht;			/* global variable */
-	return &current_funccal->l_vars.dv_hashtab; /* l: variable */
+	return &get_funccal()->l_vars.dv_hashtab; /* l: variable */
     }
     *varname = name + 2;
     if (*name == 'g')				/* global variable */
@@ -21756,13 +21806,39 @@ find_var_ht(name, varname)
     if (*name == 'v')				/* v: variable */
 	return &vimvarht;
     if (*name == 'a' && current_funccal != NULL) /* function argument */
-	return &current_funccal->l_avars.dv_hashtab;
+	return &get_funccal()->l_avars.dv_hashtab;
     if (*name == 'l' && current_funccal != NULL) /* local function variable */
-	return &current_funccal->l_vars.dv_hashtab;
+	return &get_funccal()->l_vars.dv_hashtab;
     if (*name == 's'				/* script variable */
 	    && current_SID > 0 && current_SID <= ga_scripts.ga_len)
 	return &SCRIPT_VARS(current_SID);
     return NULL;
+}
+
+/*
+ * Get function call environment based on bactrace debug level
+ */
+    static funccall_T *
+get_funccal()
+{
+    int		i;
+    funccall_T	*funccal;
+    funccall_T	*temp_funccal;
+
+    funccal = current_funccal;
+    if (debug_backtrace_level > 0)
+    {
+        for (i = 0; i < debug_backtrace_level; i++)
+        {
+            temp_funccal = funccal->caller;
+            if (temp_funccal)
+                funccal = temp_funccal;
+	    else
+                /* backtrace level overflow. reset to max */
+                debug_backtrace_level = i;
+        }
+    }
+    return funccal;
 }
 
 /*

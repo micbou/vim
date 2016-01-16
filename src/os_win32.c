@@ -463,6 +463,7 @@ vimLoadLib(char *name)
 #if defined(DYNAMIC_GETTEXT) || defined(PROTO)
 # ifndef GETTEXT_DLL
 #  define GETTEXT_DLL "libintl.dll"
+#  define GETTEXT_DLL_ALT "libintl-8.dll"
 # endif
 /* Dummy functions */
 static char *null_libintl_gettext(const char *);
@@ -479,7 +480,7 @@ char *(*dyn_libintl_bind_textdomain_codeset)(const char *, const char *)
 				       = null_libintl_bind_textdomain_codeset;
 
     int
-dyn_libintl_init(char *libname)
+dyn_libintl_init()
 {
     int i;
     static struct
@@ -498,7 +499,9 @@ dyn_libintl_init(char *libname)
     if (hLibintlDLL)
 	return 1;
     /* Load gettext library (libintl.dll) */
-    hLibintlDLL = vimLoadLib(libname != NULL ? libname : GETTEXT_DLL);
+    hLibintlDLL = vimLoadLib(GETTEXT_DLL);
+    if (!hLibintlDLL)
+	hLibintlDLL = vimLoadLib(GETTEXT_DLL_ALT);
     if (!hLibintlDLL)
     {
 	if (p_verbose > 0)
@@ -3148,6 +3151,30 @@ mch_mkdir(char_u *name)
     }
 #endif
     return _mkdir(name);
+}
+
+/*
+ * Delete directory "name".
+ * Return 0 on success, -1 on error.
+ */
+    int
+mch_rmdir(char_u *name)
+{
+#ifdef FEAT_MBYTE
+    if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
+    {
+	WCHAR	*p;
+	int	retval;
+
+	p = enc_to_utf16(name, NULL);
+	if (p == NULL)
+	    return -1;
+	retval = _wrmdir(p);
+	vim_free(p);
+	return retval;
+    }
+#endif
+    return _rmdir(name);
 }
 
 /*
