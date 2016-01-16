@@ -1,31 +1,46 @@
 ::
-:: Lua
+:: Install Lua
 :: 
 curl -fssL -o lua.zip "http://sourceforge.net/projects/luabinaries/files/5.3.2/Windows%%20Libraries/Dynamic/lua-5.3.2_Win%arch%_dllw4_lib.zip/download"
 7z x lua.zip -oC:\Lua > nul
 set PATH=C:\Lua;%PATH%
 
 ::
-:: NSIS
+:: Get diff.exe from old gvim binaries.
+::
+curl -fssL -O ftp://ftp.vim.org/pub/vim/pc/gvim74.exe
+7z e gvim74.exe $0\diff.exe -o..
+
+::
+:: Get libintl.dll, iconv.dll, and possibly libwinpthread.dll.
+::
+curl -fssL "https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.19.6-v1.14/gettext0.19.6-iconv1.14-shared-64.exe" -o gettext.exe
+start /wait gettext.exe /verysilent /dir=c:\gettext
+copy c:\gettext\libintl-8.dll %APPVEYOR_BUILD_FOLDER%\runtime
+copy c:\gettext\libiconv-2.dll %APPVEYOR_BUILD_FOLDER%\runtime
+:: Copy libwinpthread only for 64-bits
+if %arch% == 64 (
+    copy c:\gettext\libwinpthread-1.dll %APPVEYOR_BUILD_FOLDER\runtime
+)
+
+::
+:: Install NSIS.
 ::
 curl -fsSL -o nsis-3.0b2-setup.exe http://prdownloads.sourceforge.net/nsis/nsis-3.0b2-setup.exe
 nsis-3.0b2-setup.exe /S
 set PATH=C:\Program Files (x86)\NSIS;%PATH%
 
 ::
-:: UPX
+:: Install UPX.
 ::
 curl -fsSL -o upx391w.zip http://upx.sourceforge.net/download/upx391w.zip
 7z x upx391w.zip -oC:\UPX > nul
 set PATH=C:\UPX;%PATH%
 
 ::
-:: Python requirements
+:: Download and install pip for Bintray script requirement.
 ::
 
-::
-:: Needed by the Bintray script
-::
 appveyor DownloadFile https://raw.github.com/pypa/pip/master/contrib/get-pip.py
 python get-pip.py
 set PATH=C:\Python27\Scripts;%PATH%
