@@ -19,6 +19,16 @@ VC_VARS_SCRIPT = os.path.join('..', '..', 'VC', 'vcvarsall.bat')
 SDK_INCLUDE_DIR = ( r'C:\Program Files (x86)\Microsoft SDKs\Windows'
                     r'\v7.1A\Include' )
 
+VERSION_REGEX = re.compile('([0-9]+).([0-9]+)(.([0-9]+))?')
+
+
+
+def get_minimal_version(version):
+    matches = VERSION_REGEX.match(version)
+    if not matches:
+        raise RuntimeError('Wrong version format: {0}'.format(version))
+    return matches.group(1) + matches.group(2)
+
 
 def get_arch_build_args(args):
     if args.arch == 64:
@@ -27,37 +37,71 @@ def get_arch_build_args(args):
 
 
 def get_python2_path(args):
-    if args.python2:
-        return args.python2
+    if args.python2_path:
+        return args.python2_path
+
+    python2_version = get_minimal_version(args.python2_version)
+
     if args.arch == 64:
-        return r'C:\Python27-x64'
-    return r'C:\Python27'
+        return r'C:\Python{0}-x64'.format(python2_version)
+    return r'C:\Python{0}'.format(python2_version)
 
 
 def get_python3_path(args):
-    if args.python3:
-        return args.python3
+    if args.python3_path:
+        return args.python3_path
+
+    python3_version = get_minimal_version(args.python3_version)
+
     if args.arch == 64:
-        return r'C:\Python34-x64'
-    return r'C:\Python34'
+        return r'C:\Python{0}-x64'.format(python3_version)
+    return r'C:\Python{0}'.format(python3_version)
 
 
 def get_pythons_build_args(args):
     python2_path = get_python2_path(args)
     python3_path = get_python3_path(args)
 
-    return ['PYTHON_VER=27',
+    python2_version = get_minimal_version(args.python2_version)
+    python3_version = get_minimal_version(args.python3_version)
+
+    return ['PYTHON_VER={0}'.format(python2_version),
             'DYNAMIC_PYTHON=yes',
             'PYTHON={0}'.format(python2_path),
-            'PYTHON3_VER=34',
+            'PYTHON3_VER={0}'.format(python3_version),
             'DYNAMIC_PYTHON3=yes',
             'PYTHON3={0}'.format(python3_path)]
 
 
 def get_lua_build_args(args):
+    lua_version = get_minimal_version(args.lua_version)
+
     return ['LUA={0}'.format(args.lua_path),
-            'LUA_VER={0}'.format(args.lua_version),
+            'LUA_VER={0}'.format(lua_version),
             'DYNAMIC_LUA=yes']
+
+
+def get_ruby_path(args):
+    if args.ruby_path:
+        return args.ruby_path
+
+    ruby_version = get_minimal_version(args.ruby_version)
+
+    if args.arch == 64:
+        return r'C:\Ruby{0}-x64'.format(ruby_version)
+    return r'C:\Ruby{0}'.format(ruby_version)
+
+
+def get_ruby_build_args(args):
+    ruby_path = get_ruby_path(args)
+    ruby_ver_long = args.ruby_version
+    ruby_ver = get_minimal_version(args.ruby_version)
+
+    return ['RUBY={0}'.format(ruby_path),
+            'RUBY_VER_LONG={0}'.format(ruby_ver_long),
+            'RUBY_VER={0}'.format(ruby_ver),
+            'DYNAMIC_RUBY=yes',
+            'RUBY_MSVCRT_NAME=msvcrt']
 
 
 def get_msvc_dir(args):
@@ -87,6 +131,7 @@ def get_build_args(args, gui=True):
                            'DIRECTX=yes'])
         # MSVC 14 will fail to build gvim with XPM image support enabled.
         # See https://groups.google.com/forum/#!topic/vim_dev/6DfnCX9TjYI
+        # TODO: find a way to fix this.
         if args.msvc == 14:
             build_args.append('XPM=no')
 
@@ -102,6 +147,7 @@ def get_build_args(args, gui=True):
 
     build_args.extend(get_pythons_build_args(args))
     build_args.extend(get_lua_build_args(args))
+    build_args.extend(get_ruby_build_args(args))
 
     return build_args
 
@@ -172,16 +218,24 @@ def parse_arguments():
     parser.add_argument('--arch', type = int, choices = [32, 64],
                         help = 'force architecture to 32 or 64 bits on '
                         'Windows (default: python interpreter architecture).' )
-    parser.add_argument('--python2', type = str,
-                        help = 'set python2 folder (default: C:\Python27 or '
-                        'C:\Python27-x64 depending on architecture)')
-    parser.add_argument('--python3', type = str,
-                        help = 'set python3 folder (default: C:\Python34 or '
-                        'C:\Python34-x64 depending on architecture)')
     parser.add_argument('--lua-path', type = str, default = 'C:\Lua',
                         help = 'set lua folder (default: C:\Lua)')
-    parser.add_argument('--lua-version', type = int, default = 53,
-                        help = 'set lua version (default: 53)')
+    parser.add_argument('--lua-version', type = str, default = '5.3',
+                        help = 'set lua version (default: 5.3)')
+    parser.add_argument('--python2-path', type = str,
+                        help = 'set python2 folder (default: C:\Python{ver} '
+                        'or C:\Python{ver}-x64 depending on architecture)')
+    parser.add_argument('--python2-version', type = str, default = '2.7',
+                        help = 'set python2 folder (default: 2.7)')
+    parser.add_argument('--python3-path', type = str,
+                        help = 'set python3 folder (default: C:\Python{ver} '
+                        'or C:\Python{ver}-x64 depending on architecture)')
+    parser.add_argument('--python3-version', type = str, default = '3.4',
+                        help = 'set python2 folder (default: 3.4)')
+    parser.add_argument('--ruby-path', type = str,
+                        help = 'set ruby folder (default: C:\Ruby{ver})')
+    parser.add_argument('--ruby-version', type = str, default = '2.2.0',
+                        help = 'set ruby version (default: 2.2.0)')
     parser.add_argument('--credit', type = str,
                         help = 'replace username@userdomain by a custom '
                                'string in compilation credit.')

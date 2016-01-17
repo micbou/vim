@@ -1,27 +1,38 @@
 version: "{build}"
 skip_non_tags: true
 environment:
+    python2_version: 2.7
+    # TODO: try Python 3.5.
+    python3_version: 3.4
+    lua_version: 5.3
+    # TODO: bump to 2.3.0 when RubyInstaller for 2.3.0 is available.
+    ruby_version: 2.2.0
     vim_compilation_credit: micbou <contact@micbou.com>
     bintray_username: micbou
     bintray_api_key:
         secure: B1GlaWpEZ4f1oU6Hfi0XKe/LUoqJgJVUtXP8QxENtezlyNDqvRMfw1gX7btpEYk9
     matrix:
-        #- arch: 32
-        #  msvc: 11
+        - arch: 32
+          msvc: 11
         - arch: 32
           msvc: 12
-        #- arch: 32
-        #  msvc: 14
-        #- arch: 64
-        #  msvc: 11
+        - arch: 32
+          msvc: 14
+        - arch: 64
+          msvc: 11
         - arch: 64
           msvc: 12
-        #- arch: 64
-        #  msvc: 14
+        - arch: 64
+          msvc: 14
+matrix:
+  allow_failures:
+      # We disable runs for MSVC 14 because Ruby 2.2.0 cannot be compiled with
+      # this version of MSVC. This is fixed in release 2.3.0.
+      - msvc: 14
 install:
     - appveyor\install.bat
 build_script:
-    - python appveyor\build.py --msvc %msvc% --arch %arch% --credit "%vim_compilation_credit%"
+    - python appveyor\build.py --msvc %msvc% --arch %arch% --lua-version %lua_version% --python2-version %python2_version% --python3-version %python3_version% --ruby-version %ruby_version% --credit "%vim_compilation_credit%"
     - appveyor\variables.bat
     - python appveyor\package.py %vim_artifact%
 test_script:
