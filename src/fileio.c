@@ -7294,14 +7294,26 @@ delete_recursive(char_u *name)
     int		i;
     char_u	*exp;
 
-    if (mch_isdir(name))
+    /* A symbolic link to a directory itself is deleted, not the directory it
+     * points to. */
+    if (
+# if defined(WIN32)
+	 mch_isdir(name) && !mch_is_symbolic_link(name)
+# else
+#  ifdef UNIX
+	 mch_isrealdir(name)
+#  else
+	 mch_isdir(name)
+#  endif
+# endif
+	    )
     {
 	vim_snprintf((char *)NameBuff, MAXPATHL, "%s/*", name);
 	exp = vim_strsave(NameBuff);
 	if (exp == NULL)
 	    return -1;
 	if (gen_expand_wildcards(1, &exp, &file_count, &files,
-					      EW_DIR|EW_FILE|EW_SILENT) == OK)
+	      EW_DIR|EW_FILE|EW_SILENT|EW_ALLLINKS|EW_DODOT|EW_EMPTYOK) == OK)
 	{
 	    for (i = 0; i < file_count; ++i)
 		if (delete_recursive(files[i]) != 0)

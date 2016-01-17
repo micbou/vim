@@ -10418,7 +10418,7 @@ f_delete(argvars, rettv)
 	/* delete an empty directory */
 	rettv->vval.v_number = mch_rmdir(name) == 0 ? 0 : -1;
     else if (STRCMP(flags, "rf") == 0)
-	/* delete an directory recursively */
+	/* delete a directory recursively */
 	rettv->vval.v_number = delete_recursive(name);
     else
 	EMSG2(_(e_invexpr2), flags);
@@ -20844,10 +20844,10 @@ find_name_end(arg, expr_start, expr_end, flags)
 	else if (br_nest == 0 && mb_nest == 0 && *p == ':')
 	{
 	    /* "s:" is start of "s:var", but "n:" is not and can be used in
-	     * slice "[n:]".  Also "xx:" is not a namespace. */
+	     * slice "[n:]".  Also "xx:" is not a namespace. But {ns}: is. */
 	    len = (int)(p - arg);
 	    if ((len == 1 && vim_strchr(NAMESPACE_CHAR, *arg) == NULL)
-		    || len > 1)
+		    || (len > 1 && p[-1] != '}'))
 		break;
 	}
 

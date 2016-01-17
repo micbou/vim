@@ -38,7 +38,7 @@ win32:	nolog $(SCRIPTS_FIRST) $(SCRIPTS) $(SCRIPTS_WIN32) newtests report
 $(DOSTMP_INFILES): $(*B).in
 	if not exist $(DOSTMP)\NUL md $(DOSTMP)
 	if exist $@ del $@
-	$(VIMPROG) -u dos.vim --noplugin "+set ff=dos|f $@|wq" $(*B).in
+	$(VIMPROG) -u dos.vim -U NONE --noplugin "+set ff=dos|f $@|wq" $(*B).in
 
 # For each input file dostmp/test99.in run the tests.
 # This moves test99.in to test99.in.bak temporarily.
@@ -55,7 +55,7 @@ $(TEST_OUTFILES): $(DOSTMP)\$(*B).in
 	-@if exist Xfind rd /s /q Xfind
 	-@del X*
 	-@if exist viminfo del viminfo
-	$(VIMPROG) -u dos.vim --noplugin "+set ff=unix|f test.out|wq" \
+	$(VIMPROG) -u dos.vim -U NONE --noplugin "+set ff=unix|f test.out|wq" \
 		$(DOSTMP)\$(*B).out
 	@diff test.out $*.ok & if errorlevel 1 \
 		( move /y test.out $*.failed \
@@ -89,6 +89,7 @@ clean:
 	-if exist Xdir1 rd /s /q Xdir1
 	-if exist Xfind rd /s /q Xfind
 	-del X*
+	-for /d %i in (X*) do @rmdir /s/q %i
 	-if exist viminfo del viminfo
 	-if exist test.log del test.log
 	-if exist messages del messages
@@ -113,4 +114,4 @@ bench_re_freeze.out: bench_re_freeze.vim
 newtests: $(NEW_TESTS)
 
 .vim.res:
-	$(VIMPROG) -u NONE -S runtest.vim $*.vim
+	$(VIMPROG) -u NONE -U NONE -S runtest.vim $*.vim

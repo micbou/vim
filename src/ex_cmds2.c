@@ -2562,6 +2562,10 @@ ex_argdelete(eap)
 		curwin->w_arg_idx -= n;
 	    else if (curwin->w_arg_idx > eap->line1)
 		curwin->w_arg_idx = eap->line1;
+	    if (ARGCOUNT == 0)
+		curwin->w_arg_idx = 0;
+	    else if (curwin->w_arg_idx >= ARGCOUNT)
+		curwin->w_arg_idx = ARGCOUNT - 1;
 	}
     }
     else if (*eap->arg == NUL)
@@ -2832,6 +2836,7 @@ alist_add_list(count, files, after)
     int		after;	    /* where to add: 0 = before first one */
 {
     int		i;
+    int		old_argcount = ARGCOUNT;
 
     if (ga_grow(&ALIST(curwin)->al_ga, count) == OK)
     {
@@ -2848,8 +2853,8 @@ alist_add_list(count, files, after)
 	    ARGLIST[after + i].ae_fnum = buflist_add(files[i], BLN_LISTED);
 	}
 	ALIST(curwin)->al_ga.ga_len += count;
-	if (curwin->w_arg_idx >= after)
-	    ++curwin->w_arg_idx;
+	if (old_argcount > 0 && curwin->w_arg_idx >= after)
+	    curwin->w_arg_idx += count;
 	return after;
     }
 
