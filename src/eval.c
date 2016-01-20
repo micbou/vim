@@ -809,6 +809,9 @@ static typval_T *alloc_tv __ARGS((void));
 static typval_T *alloc_string_tv __ARGS((char_u *string));
 static void init_tv __ARGS((typval_T *varp));
 static long get_tv_number __ARGS((typval_T *varp));
+#ifdef FEAT_FLOAT
+static float_T get_tv_float(typval_T *varp);
+#endif
 static linenr_T get_tv_lnum __ARGS((typval_T *argvars));
 static linenr_T get_tv_lnum_buf __ARGS((typval_T *argvars, buf_T *buf));
 static char_u *get_tv_string __ARGS((typval_T *varp));
@@ -9278,7 +9281,8 @@ f_assert_exception(argvars, rettv)
 	assert_error(&ga);
 	ga_clear(&ga);
     }
-    else if (strstr((char *)vimvars[VV_EXCEPTION].vv_str, error) == NULL)
+    else if (error != NULL
+	    && strstr((char *)vimvars[VV_EXCEPTION].vv_str, error) == NULL)
     {
 	prepare_assert_error(&ga);
 	fill_assert_error(&ga, &argvars[1], NULL, &argvars[0],
@@ -18142,6 +18146,9 @@ typedef struct
 static int	item_compare_ic;
 static int	item_compare_numeric;
 static int	item_compare_numbers;
+#ifdef FEAT_FLOAT
+static int	item_compare_float;
+#endif
 static char_u	*item_compare_func;
 static dict_T	*item_compare_selfdict;
 static int	item_compare_func_err;
@@ -18180,6 +18187,16 @@ item_compare(s1, s2)
 
 	return v1 == v2 ? 0 : v1 > v2 ? 1 : -1;
     }
+
+#ifdef FEAT_FLOAT
+    if (item_compare_float)
+    {
+	float_T	v1 = get_tv_float(tv1);
+	float_T	v2 = get_tv_float(tv2);
+
+	return v1 == v2 ? 0 : v1 > v2 ? 1 : -1;
+    }
+#endif
 
     /* tv2string() puts quotes around a string and allocates memory.  Don't do
      * that for string variables. Use a single quote when comparing with a
@@ -18315,6 +18332,9 @@ do_sort_uniq(argvars, rettv, sort)
 	item_compare_ic = FALSE;
 	item_compare_numeric = FALSE;
 	item_compare_numbers = FALSE;
+#ifdef FEAT_FLOAT
+	item_compare_float = FALSE;
+#endif
 	item_compare_func = NULL;
 	item_compare_selfdict = NULL;
 	if (argvars[1].v_type != VAR_UNKNOWN)
@@ -18345,6 +18365,13 @@ do_sort_uniq(argvars, rettv, sort)
 			item_compare_func = NULL;
 			item_compare_numbers = TRUE;
 		    }
+#ifdef FEAT_FLOAT
+		    else if (STRCMP(item_compare_func, "f") == 0)
+		    {
+			item_compare_func = NULL;
+			item_compare_float = TRUE;
+		    }
+#endif
 		    else if (STRCMP(item_compare_func, "i") == 0)
 		    {
 			item_compare_func = NULL;
@@ -21612,6 +21639,40 @@ get_tv_number_chk(varp, denote)
     return n;
 }
 
+#ifdef FEAT_FLOAT
+    static float_T
+get_tv_float(varp)
+    typval_T	*varp;
+{
+    switch (varp->v_type)
+    {
+	case VAR_NUMBER:
+	    return (float_T)(varp->vval.v_number);
+#ifdef FEAT_FLOAT
+	case VAR_FLOAT:
+	    return varp->vval.v_float;
+	    break;
+#endif
+	case VAR_FUNC:
+	    EMSG(_("E891: Using a Funcref as a Float"));
+	    break;
+	case VAR_STRING:
+	    EMSG(_("E892: Using a String as a Float"));
+	    break;
+	case VAR_LIST:
+	    EMSG(_("E893: Using a List as a Float"));
+	    break;
+	case VAR_DICT:
+	    EMSG(_("E894: Using a Dictionary as a Float"));
+	    break;
+	default:
+	    EMSG2(_(e_intern2), "get_tv_float()");
+	    break;
+    }
+    return 0;
+}
+#endif
+
 /*
  * Get the lnum from the first argument.
  * Also accepts ".", "$", etc., but that only works for the current buffer.
@@ -23627,8 +23688,10 @@ theend:
 eval_fname_script(p)
     char_u	*p;
 {
-    if (p[0] == '<' && (STRNICMP(p + 1, "SID>", 4) == 0
-					  || STRNICMP(p + 1, "SNR>", 4) == 0))
+    /* Use MB_STRICMP() because in Turkish comparing the "I" may not work with
+     * the standard library function. */
+    if (p[0] == '<' && (MB_STRNICMP(p + 1, "SID>", 4) == 0
+				       || MB_STRNICMP(p + 1, "SNR>", 4) == 0))
 	return 5;
     if (p[0] == 's' && p[1] == ':')
 	return 2;

@@ -89,8 +89,6 @@ SCRIPTS_ALL = \
 	test106.out \
 	test107.out \
 	test108.out \
-	test_argument_0count.out \
-	test_argument_count.out \
 	test_autocmd_option.out \
 	test_autoformat_join.out \
 	test_breakindent.out \
@@ -177,6 +175,7 @@ NEW_TESTS = test_arglist.res \
 	    test_increment.res \
 	    test_perl.res \
 	    test_quickfix.res \
+	    test_syntax.res \
 	    test_viminfo.res \
 	    test_viml.res \
 	    test_alot.res
