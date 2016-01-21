@@ -12,18 +12,18 @@ environment:
     bintray_api_key:
         secure: B1GlaWpEZ4f1oU6Hfi0XKe/LUoqJgJVUtXP8QxENtezlyNDqvRMfw1gX7btpEYk9
     matrix:
-        - arch: 32
-          msvc: 11
-        - arch: 32
+        #        - arch: 32
+        #          msvc: 11
+        #        - arch: 32
+        #          msvc: 12
+        #        - arch: 32
+        #          msvc: 14
+        #        - arch: 64
+        #          msvc: 11
+        - arch: 64
           msvc: 12
-        - arch: 32
-          msvc: 14
-        - arch: 64
-          msvc: 11
-        - arch: 64
-          msvc: 12
-        - arch: 64
-          msvc: 14
+        #        - arch: 64
+        #          msvc: 14
 matrix:
   allow_failures:
       # We disable runs for MSVC 14 because Ruby 2.2.0 cannot be compiled with
