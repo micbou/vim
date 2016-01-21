@@ -3453,15 +3453,19 @@ ins_compl_bs(void)
 						  || ins_compl_need_restart())
 	ins_compl_restart();
 
-    vim_free(compl_leader);
-    compl_leader = vim_strnsave(line + compl_col, (int)(p - line) - compl_col);
-    if (compl_leader != NULL)
+    /* When 'always' is set, don't reset compl_leader */
+    if (!compl_opt_refresh_always)
     {
-	ins_compl_new_leader();
-	if (compl_shown_match != NULL)
-	    /* Make sure current match is not a hidden item. */
-	    compl_curr_match = compl_shown_match;
-	return NUL;
+        vim_free(compl_leader);
+        compl_leader = vim_strnsave(line + compl_col, (int)(p - line) - compl_col);
+        if (compl_leader != NULL)
+        {
+            ins_compl_new_leader();
+            if (compl_shown_match != NULL)
+                /* Make sure current match is not a hidden item. */
+                compl_curr_match = compl_shown_match;
+            return NUL;
+        }
     }
     return K_BS;
 }
