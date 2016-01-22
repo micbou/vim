@@ -1,7 +1,10 @@
-rem Set environment variables.
-rem   @param arch Architecture (32 or 64)
-rem   @param msvc Microsoft Visual C++ version
-rem   @param appveyor_repo_tag_name AppVeyor tag (Vim tags are in vX.Y.Z form)
+:: Set environment variables.
+::   @param arch Architecture (32 or 64)
+::   @param msvc Microsoft Visual C++ version
+::   @param appveyor_repo_tag_name AppVeyor tag (Vim tags are in vX.Y.Z form)
+
+:: Remove 'v' prefix in versioning name.
+set vim_version=%appveyor_repo_tag_name:~1%
 
 setlocal
 
@@ -35,9 +38,6 @@ for /F "tokens=1,2 delims=." %%a in ("%tcl_version%") do (
 )
 
 endlocal & (
-    set vim_version=%appveyor_repo_tag_name:~1%
     set vim_artifact=vim%vim_version%-%vim_arch%.exe
     set vim_description=Vim %vim_version% 32-bit and 64-bit for Windows with Lua %lua_major_minor_version%, Perl %perl_major_minor_version%, Python %python2_major_minor_version%, Python %python3_major_minor_version%, Racket %racket_major_minor_version%, Ruby %ruby_major_minor_version%, and Tcl %tcl_major_minor_version% support. Compiled with MSVC %msvc%.
 )
-
-echo %vim_description%
