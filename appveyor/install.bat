@@ -88,7 +88,7 @@ set PATH=C:\upx391w;%PATH%
 :: Download and install pip for Bintray script requirement.
 ::
 
-appveyor DownloadFile https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+appveyor DownloadFile https://bootstrap.pypa.io/get-pip.py
 python get-pip.py
 set PATH=C:\Python27\Scripts;%PATH%
 pip install requests
