@@ -11,4 +11,4 @@ if %arch% == 32 (
 
 set vim_version=%appveyor_repo_tag_name:~1%
 set vim_artifact=vim%vim_version%-%vim_arch%.exe
-set vim_description=Vim %vim_version% 32-bit and 64-bit for Windows with Lua %lua_version%, Perl %perl_version%, Python %python2_version%, Python %python3_version%, Ruby %ruby_version%, and Tcl %tcl_version% support. Compiled with MSVC %msvc%.
+set vim_description=Vim %vim_version% 32-bit and 64-bit for Windows with Lua %lua_version%, Perl %perl_version%, Python %python2_version%, Python %python3_version%, Racket %racket_version%, Ruby %ruby_version%, and Tcl %tcl_version% support. Compiled with MSVC %msvc%.
