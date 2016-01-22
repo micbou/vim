@@ -78,6 +78,23 @@ popd
 endlocal & set PATH=%ruby_path%\bin;%PATH%
 
 ::
+:: Install Tcl
+::
+setlocal
+
+if %arch% == 32 (
+    set tcl_arch=ix86
+) else (
+    set tcl_arch=x86_64
+)
+set tcl_installer_name=ActiveTcl%tcl_version%.%tcl_revision%-win32-%tcl_arch%-threaded.exe
+
+appveyor DownloadFile http://downloads.activestate.com/ActiveTcl/releases/%tcl_version%/%tcl_installer_name%
+start /wait %tcl_installer_name% --directory C:\Tcl
+
+endlocal & set PATH=C:\Tcl\bin;%PATH%
+
+::
 :: Get diff.exe from old gvim binaries.
 ::
 curl -fssL -O ftp://ftp.vim.org/pub/vim/pc/gvim74.exe

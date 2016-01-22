@@ -22,6 +22,12 @@ SDK_INCLUDE_DIR = ( r'C:\Program Files (x86)\Microsoft SDKs\Windows'
 VERSION_REGEX = re.compile('([0-9]+).([0-9]+)(.([0-9]+)){0,2}')
 
 
+def get_major_minor_version(version):
+    matches = VERSION_REGEX.match(version)
+    if not matches:
+        raise RuntimeError('Wrong version format: {0}'.format(version))
+    return matches.group(1) + '.' + matches.group(2)
+
 
 def get_minimal_version(version):
     matches = VERSION_REGEX.match(version)
@@ -122,6 +128,16 @@ def get_ruby_build_args(args):
             'RUBY_MSVCRT_NAME=msvcrt']
 
 
+def get_tcl_build_args(args):
+    tcl_ver_long = get_major_minor_version(args.tcl_version)
+    tcl_ver = get_minimal_version(args.tcl_version)
+
+    return ['TCL={0}'.format(args.tcl_path),
+            'TCL_VER_LONG={0}'.format(tcl_ver_long),
+            'TCL_VER={0}'.format(tcl_ver),
+            'DYNAMIC_TCL=yes']
+
+
 def get_msvc_dir(args):
     if args.msvc == 11:
         return os.path.join(os.environ['VS110COMNTOOLS'], MSVC_BIN_DIR)
@@ -167,6 +183,7 @@ def get_build_args(args, gui=True):
     build_args.extend(get_perl_build_args(args))
     build_args.extend(get_pythons_build_args(args))
     build_args.extend(get_ruby_build_args(args))
+    build_args.extend(get_tcl_build_args(args))
 
     return build_args
 
@@ -258,7 +275,11 @@ def parse_arguments():
     parser.add_argument('--ruby-path', type = str,
                         help = 'set Ruby folder (default: C:\Ruby{ver})')
     parser.add_argument('--ruby-version', type = str, default = '2.2.0',
-                        help = 'set ruby version (default: 2.2.0)')
+                        help = 'set Ruby version (default: 2.2.0)')
+    parser.add_argument('--tcl-path', type = str, default = 'C:\Tcl',
+                        help = 'set Tcl folder (default: C:\Tcl)')
+    parser.add_argument('--tcl-version', type = str, default = '8.6.4.1',
+                        help = 'set Tcl version (default: 8.6.4.1)')
     parser.add_argument('--credit', type = str,
                         help = 'replace username@userdomain by a custom '
                                'string in compilation credit.')

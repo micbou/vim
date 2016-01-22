@@ -9,6 +9,8 @@ environment:
     python3_version: 3.4
     # TODO: bump to 2.3.0 when RubyInstaller for 2.3.0 is available.
     ruby_version: 2.2.0
+    tcl_version: 8.6.4.1
+    tcl_revision: 299124
     vim_compilation_credit: micbou <contact@micbou.com>
     bintray_username: micbou
     bintray_api_key:
