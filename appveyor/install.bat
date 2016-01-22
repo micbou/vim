@@ -1,13 +1,39 @@
 ::
-:: Install Lua 5.3
-:: 
+:: Install Lua
+::
 curl -fssL -o lua.zip "http://sourceforge.net/projects/luabinaries/files/5.3.2/Windows%%20Libraries/Dynamic/lua-5.3.2_Win%arch%_dllw4_lib.zip/download"
 7z x lua.zip -oC:\Lua > nul
 set PATH=C:\Lua;%PATH%
 
 ::
-:: Install Ruby 2.2
+:: Install Perl
 ::
+
+:: Use local environment variables to avoid conflicts with variables in Vim makefile.
+setlocal
+
+if %arch% == 32 (
+    set perl_arch=x86-64int
+) else (
+    set perl_arch=x64
+)
+set perl_folder=ActivePerl-%perl_version%-MSWin32-%perl_arch%-%perl_revision%
+
+appveyor DownloadFile http://downloads.activestate.com/ActivePerl/releases/%perl_version%/%perl_folder%.zip
+7z x %perl_folder%.zip -oC:\ > nul
+
+:: Deduce minimal version format from full version (ex: 5.22.1.2201 gives 522).
+for /F "tokens=1,2 delims=." %%a in ("%perl_version%") do (
+   set perl_minimal_version=%%a%%b
+)
+move C:\%perl_folder% C:\Perl%perl_minimal_version%
+
+endlocal & set PATH=C:\Perl%perl_minimal_version%\perl\bin;%PATH%
+
+::
+:: Install Ruby
+::
+setlocal
 
 :: RubyInstaller is built by MinGW, so we cannot use header files from it.
 :: Download the source files and generate config.h for MSVC.
@@ -47,10 +73,9 @@ if %arch% == 32 (
 )
 
 xcopy /s .ext\include %ruby_path%\include\ruby-%ruby_version%
-dir %ruby_path%\include\ruby-%ruby_version%\i386-mswin32_120\ruby
 popd
 
-set PATH=%ruby_path%\bin;%PATH%
+endlocal & set PATH=%ruby_path%\bin;%PATH%
 
 ::
 :: Get diff.exe from old gvim binaries.

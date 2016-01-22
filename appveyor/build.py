@@ -19,7 +19,7 @@ VC_VARS_SCRIPT = os.path.join('..', '..', 'VC', 'vcvarsall.bat')
 SDK_INCLUDE_DIR = ( r'C:\Program Files (x86)\Microsoft SDKs\Windows'
                     r'\v7.1A\Include' )
 
-VERSION_REGEX = re.compile('([0-9]+).([0-9]+)(.([0-9]+))?')
+VERSION_REGEX = re.compile('([0-9]+).([0-9]+)(.([0-9]+)){0,2}')
 
 
 
@@ -34,6 +34,32 @@ def get_arch_build_args(args):
     if args.arch == 64:
         return 'CPU=AMD64'
     return 'CPU=i386'
+
+
+def get_lua_build_args(args):
+    lua_version = get_minimal_version(args.lua_version)
+
+    return ['LUA={0}'.format(args.lua_path),
+            'LUA_VER={0}'.format(lua_version),
+            'DYNAMIC_LUA=yes']
+
+
+def get_perl_path(args):
+    if args.perl_path:
+        return args.perl_path
+
+    perl_version = get_minimal_version(args.perl_version)
+
+    return r'C:\Perl{0}\perl'.format(perl_version)
+
+
+def get_perl_build_args(args):
+    perl_path = get_perl_path(args)
+    perl_version = get_minimal_version(args.perl_version)
+
+    return ['PERL={0}'.format(perl_path),
+            'PERL_VER={0}'.format(perl_version),
+            'DYNAMIC_PERL=yes']
 
 
 def get_python2_path(args):
@@ -71,14 +97,6 @@ def get_pythons_build_args(args):
             'PYTHON3_VER={0}'.format(python3_version),
             'DYNAMIC_PYTHON3=yes',
             'PYTHON3={0}'.format(python3_path)]
-
-
-def get_lua_build_args(args):
-    lua_version = get_minimal_version(args.lua_version)
-
-    return ['LUA={0}'.format(args.lua_path),
-            'LUA_VER={0}'.format(lua_version),
-            'DYNAMIC_LUA=yes']
 
 
 def get_ruby_path(args):
@@ -145,8 +163,9 @@ def get_build_args(args, gui=True):
         build_args.extend(['USERNAME={0}'.format(args.credit),
                            'USERDOMAIN='])
 
-    build_args.extend(get_pythons_build_args(args))
     build_args.extend(get_lua_build_args(args))
+    build_args.extend(get_perl_build_args(args))
+    build_args.extend(get_pythons_build_args(args))
     build_args.extend(get_ruby_build_args(args))
 
     return build_args
@@ -219,21 +238,25 @@ def parse_arguments():
                         help = 'force architecture to 32 or 64 bits on '
                         'Windows (default: python interpreter architecture).' )
     parser.add_argument('--lua-path', type = str, default = 'C:\Lua',
-                        help = 'set lua folder (default: C:\Lua)')
+                        help = 'set Lua folder (default: C:\Lua)')
     parser.add_argument('--lua-version', type = str, default = '5.3',
-                        help = 'set lua version (default: 5.3)')
+                        help = 'set Lua version (default: 5.3)')
+    parser.add_argument('--perl-path', type = str,
+                        help = 'set Perl folder (default: C:\Perl{ver})')
+    parser.add_argument('--perl-version', type = str, default = '5.22.1.2201',
+                        help = 'set Perl version (default: 5.22.1.2201)')
     parser.add_argument('--python2-path', type = str,
-                        help = 'set python2 folder (default: C:\Python{ver} '
+                        help = 'set Python2 folder (default: C:\Python{ver} '
                         'or C:\Python{ver}-x64 depending on architecture)')
     parser.add_argument('--python2-version', type = str, default = '2.7',
-                        help = 'set python2 folder (default: 2.7)')
+                        help = 'set Python2 version (default: 2.7)')
     parser.add_argument('--python3-path', type = str,
-                        help = 'set python3 folder (default: C:\Python{ver} '
+                        help = 'set Python3 folder (default: C:\Python{ver} '
                         'or C:\Python{ver}-x64 depending on architecture)')
     parser.add_argument('--python3-version', type = str, default = '3.4',
-                        help = 'set python2 folder (default: 3.4)')
+                        help = 'set Python3 version (default: 3.4)')
     parser.add_argument('--ruby-path', type = str,
-                        help = 'set ruby folder (default: C:\Ruby{ver})')
+                        help = 'set Ruby folder (default: C:\Ruby{ver})')
     parser.add_argument('--ruby-version', type = str, default = '2.2.0',
                         help = 'set ruby version (default: 2.2.0)')
     parser.add_argument('--credit', type = str,

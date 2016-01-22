@@ -1,10 +1,12 @@
 version: "{build}"
 skip_non_tags: true
 environment:
+    lua_version: 5.3
+    perl_version: 5.22.1.2201
+    perl_revision: 299574
     python2_version: 2.7
     # TODO: try Python 3.5.
     python3_version: 3.4
-    lua_version: 5.3
     # TODO: bump to 2.3.0 when RubyInstaller for 2.3.0 is available.
     ruby_version: 2.2.0
     vim_compilation_credit: micbou <contact@micbou.com>
