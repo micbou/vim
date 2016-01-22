@@ -177,6 +177,7 @@ def get_build_args(args, gui=True):
 
     build_args.extend(['WINVER=0x0500',
                        'FEATURES=HUGE',
+                       'SNIFF=yes',
                        'MBYTE=yes',
                        'ICONV=yes',
                        'DEBUG=no'])
