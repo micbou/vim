@@ -288,22 +288,22 @@ def parse_arguments():
                         'Windows (default: python interpreter architecture).' )
     parser.add_argument('--lua-path', type = str, default = 'C:\Lua',
                         help = 'set Lua folder (default: C:\Lua)')
-    parser.add_argument('--lua-version', type = str, default = '5.3',
-                        help = 'set Lua version (default: 5.3)')
+    parser.add_argument('--lua-version', type = str,
+                        help = 'set Lua version')
     parser.add_argument('--perl-path', type = str,
-                        help = 'set Perl folder (default: C:\Perl{ver})')
-    parser.add_argument('--perl-version', type = str, default = '5.22.1.2201',
-                        help = 'set Perl version (default: 5.22.1.2201)')
+                        help = 'set Perl folder (default: C:\Perl{ver}\perl)')
+    parser.add_argument('--perl-version', type = str,
+                        help = 'set Perl version')
     parser.add_argument('--python2-path', type = str,
                         help = 'set Python2 folder (default: C:\Python{ver} '
                         'or C:\Python{ver}-x64 depending on architecture)')
-    parser.add_argument('--python2-version', type = str, default = '2.7',
-                        help = 'set Python2 version (default: 2.7)')
+    parser.add_argument('--python2-version', type = str,
+                        help = 'set Python2 version')
     parser.add_argument('--python3-path', type = str,
                         help = 'set Python3 folder (default: C:\Python{ver} '
                         'or C:\Python{ver}-x64 depending on architecture)')
-    parser.add_argument('--python3-version', type = str, default = '3.4',
-                        help = 'set Python3 version (default: 3.4)')
+    parser.add_argument('--python3-version', type = str,
+                        help = 'set Python3 version')
     parser.add_argument('--racket-path', type = str, default = 'C:\Racket',
                         help = 'set Racket folder (default: C:\Racket)')
     parser.add_argument('--racket-library', type = str, default = '3m_9z0ds0',
@@ -311,12 +311,12 @@ def parse_arguments():
                                '(default: 3m_9z0ds0)')
     parser.add_argument('--ruby-path', type = str,
                         help = 'set Ruby folder (default: C:\Ruby{ver})')
-    parser.add_argument('--ruby-version', type = str, default = '2.2.0',
-                        help = 'set Ruby version (default: 2.2.0)')
+    parser.add_argument('--ruby-version', type = str,
+                        help = 'set Ruby version')
     parser.add_argument('--tcl-path', type = str, default = 'C:\Tcl',
                         help = 'set Tcl folder (default: C:\Tcl)')
-    parser.add_argument('--tcl-version', type = str, default = '8.6.4.1',
-                        help = 'set Tcl version (default: 8.6.4.1)')
+    parser.add_argument('--tcl-version', type = str,
+                        help = 'set Tcl version')
     parser.add_argument('--credit', type = str,
                         help = 'replace username@userdomain by a custom '
                                'string in compilation credit.')
