@@ -120,14 +120,16 @@ curl -fssL -O ftp://ftp.vim.org/pub/vim/pc/gvim74.exe
 ::
 :: Get libintl.dll, iconv.dll, and possibly libwinpthread.dll.
 ::
-curl -fssL "https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.19.6-v1.14/gettext0.19.6-iconv1.14-shared-64.exe" -o gettext.exe
-start /wait gettext.exe /verysilent /dir=c:\gettext
-copy c:\gettext\libintl-8.dll %APPVEYOR_BUILD_FOLDER%\runtime
-copy c:\gettext\libiconv-2.dll %APPVEYOR_BUILD_FOLDER%\runtime
+appveyor DownloadFile https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.19.6-v1.14/gettext0.19.6-iconv1.14-shared-64.exe
+start /wait gettext0.19.6-iconv1.14-shared-64.exe /verysilent /dir=c:\gettext
+copy C:\gettext\libintl-8.dll %APPVEYOR_BUILD_FOLDER%\runtime
+copy C:\gettext\libiconv-2.dll %APPVEYOR_BUILD_FOLDER%\runtime
 :: Copy libwinpthread only for 64-bits
 if %arch% == 64 (
-    copy c:\gettext\libwinpthread-1.dll %APPVEYOR_BUILD_FOLDER%\runtime
+    copy C:\gettext\libwinpthread-1.dll %APPVEYOR_BUILD_FOLDER%\runtime
 )
+
+set PATH=C:\gettext;%PATH%
 
 ::
 :: Install NSIS.

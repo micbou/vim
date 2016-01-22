@@ -5,10 +5,13 @@ import os
 import subprocess
 import platform
 import re
+from distutils.spawn import find_executable
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath( __file__ ))
 ROOT_DIR = os.path.join(SCRIPT_DIR, '..')
 SOURCES_DIR = os.path.join(ROOT_DIR, 'src')
+RUNTIME_DIR = os.path.join(ROOT_DIR, 'runtime')
+TRANSLATIONS_DIR = os.path.join(SOURCES_DIR, 'po')
 
 MAKE_PATH = os.path.join(SOURCES_DIR, 'Make_mvc.mak')
 APPVEYOR_MAKE_PATH = os.path.join(SOURCES_DIR, 'Make_mvc_appveyor.mak')
@@ -249,6 +252,27 @@ def remove_progress_bars():
                                             line))
 
 
+def build_translations(args):
+    msvc_dir = get_msvc_dir(args)
+
+    nmake = os.path.join(msvc_dir, 'nmake.exe')
+    if not os.path.isfile(nmake):
+        raise RuntimeError('nmake tool not found.')
+
+    gettext_path = find_executable('gettext')
+    if not os.path.isfile( gettext_path ):
+        raise RuntimeError('gettext tool not found')
+
+    cmd = [nmake,
+           '/f',
+           'Make_mvc.mak',
+           'GETTEXT_PATH={0}'.format(os.path.dirname(gettext_path)),
+           'VIMRUNTIME={0}'.format(RUNTIME_DIR),
+           'install-all']
+
+    subprocess.check_call(cmd, cwd = TRANSLATIONS_DIR)
+
+
 def clean_up():
     if os.path.isfile(APPVEYOR_MAKE_PATH):
         os.remove(APPVEYOR_MAKE_PATH)
@@ -309,6 +333,7 @@ def main():
     remove_progress_bars()
     build_vim(args, gui = False)
     build_vim(args)
+    build_translations(args)
     clean_up()
 
 
