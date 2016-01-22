@@ -1,7 +1,7 @@
 ::
 :: Install Lua
 ::
-curl -fssL -o lua.zip "http://sourceforge.net/projects/luabinaries/files/5.3.2/Windows%%20Libraries/Dynamic/lua-5.3.2_Win%arch%_dllw4_lib.zip/download"
+curl -fssL -o lua.zip "http://sourceforge.net/projects/luabinaries/files/%lua_version%/Windows%%20Libraries/Dynamic/lua-%lua_version%_Win%arch%_dllw4_lib.zip/download"
 7z x lua.zip -oC:\Lua > nul
 set PATH=C:\Lua;%PATH%
 

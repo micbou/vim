@@ -1,12 +1,12 @@
 version: "{build}"
 skip_non_tags: true
 environment:
-    lua_version: 5.3
+    lua_version: 5.3.2
     perl_version: 5.22.1.2201
     perl_revision: 299574
-    python2_version: 2.7
+    python2_version: 2.7.11
     # TODO: try Python 3.5.
-    python3_version: 3.4
+    python3_version: 3.4.4
     # TODO: bump to 2.3.0 when RubyInstaller for 2.3.0 is available.
     racket_version: 6.3
     ruby_version: 2.2.0
@@ -31,13 +31,13 @@ environment:
           msvc: 14
 matrix:
   allow_failures:
-      # We disable runs for MSVC 14 because Ruby 2.2.0 cannot be compiled with
+      # We allow failures for MSVC 14 because Ruby 2.2.0 cannot be compiled with
       # this version of MSVC. This is fixed in release 2.3.0.
       - msvc: 14
 install:
     - appveyor\install.bat
 build_script:
-    - python appveyor\build.py --msvc %msvc% --arch %arch% --lua-version %lua_version% --python2-version %python2_version% --python3-version %python3_version% --ruby-version %ruby_version% --credit "%vim_compilation_credit%"
+    - python appveyor\build.py --msvc %msvc% --arch %arch% --lua-version %lua_version% --perl-version %perl_version% --python2-version %python2_version% --python3-version %python3_version% --ruby-version %ruby_version% --tcl-version %tcl_version% --credit "%vim_compilation_credit%"
     - appveyor\variables.bat
     - python appveyor\package.py %vim_artifact%
 test_script:
