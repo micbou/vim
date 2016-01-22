@@ -105,6 +105,12 @@ def get_pythons_build_args(args):
             'PYTHON3={0}'.format(python3_path)]
 
 
+def get_racket_build_args(args):
+    return ['MZSCHEME={0}'.format(args.racket_path),
+            'MZSCHEME_VER={0}'.format(args.racket_library),
+            'DYNAMIC_MZSCHEME=yes']
+
+
 def get_ruby_path(args):
     if args.ruby_path:
         return args.ruby_path
@@ -182,6 +188,7 @@ def get_build_args(args, gui=True):
     build_args.extend(get_lua_build_args(args))
     build_args.extend(get_perl_build_args(args))
     build_args.extend(get_pythons_build_args(args))
+    build_args.extend(get_racket_build_args(args))
     build_args.extend(get_ruby_build_args(args))
     build_args.extend(get_tcl_build_args(args))
 
@@ -272,6 +279,11 @@ def parse_arguments():
                         'or C:\Python{ver}-x64 depending on architecture)')
     parser.add_argument('--python3-version', type = str, default = '3.4',
                         help = 'set Python3 version (default: 3.4)')
+    parser.add_argument('--racket-path', type = str, default = 'C:\Racket',
+                        help = 'set Racket folder (default: C:\Racket)')
+    parser.add_argument('--racket-library', type = str, default = '3m_9z0ds0',
+                        help = 'set Racket library version name '
+                               '(default: 3m_9z0ds0)')
     parser.add_argument('--ruby-path', type = str,
                         help = 'set Ruby folder (default: C:\Ruby{ver})')
     parser.add_argument('--ruby-version', type = str, default = '2.2.0',

@@ -8,6 +8,7 @@ environment:
     # TODO: try Python 3.5.
     python3_version: 3.4
     # TODO: bump to 2.3.0 when RubyInstaller for 2.3.0 is available.
+    racket_version: 6.3
     ruby_version: 2.2.0
     tcl_version: 8.6.4.1
     tcl_revision: 299124

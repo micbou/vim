@@ -31,6 +31,23 @@ move C:\%perl_folder% C:\Perl%perl_minimal_version%
 endlocal & set PATH=C:\Perl%perl_minimal_version%\perl\bin;%PATH%
 
 ::
+:: Install Racket
+::
+setlocal
+
+if %arch% == 32 (
+    set racket_arch=i386
+) else (
+    set racket_arch=x86_64
+)
+set racket_installer_name=racket-minimal-%racket_version%-%racket_arch%-win32.exe
+
+appveyor DownloadFile https://mirror.racket-lang.org/releases/6.3/installers/%racket_installer_name%
+start /wait %racket_installer_name% /S /D=C:\Racket
+
+endlocal & set PATH=C:\Racket;%PATH%
+
+::
 :: Install Ruby
 ::
 setlocal
