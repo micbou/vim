@@ -33,7 +33,7 @@ def deploy(args):
     subprocess.check_call([git, 'tag', '-f', latest_tag])
 
     # Push the changes
-    subprocess.check_call([git, 'push'])
+    subprocess.check_call([git, 'push', '-f'])
 
     # Remove upstream tag in case it already exists
     if len(subprocess.check_output([git, 'ls-remote', 'origin', latest_tag])):
