@@ -52,7 +52,7 @@ endlocal & set PATH=C:\Racket;%PATH%
 ::
 setlocal
 
-:: RubyInstaller is built by MinGW, so we cannot use header files from it.
+:: RubyInstaller is built with MinGW, so we cannot use header files from it.
 :: Download the source files and generate config.h for MSVC.
 
 :: Get the branch according to Ruby version
