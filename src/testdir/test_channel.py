@@ -61,19 +61,33 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
             # Negative numbers are used for "eval" responses.
             if decoded[0] >= 0:
                 if decoded[1] == 'hello!':
+                    # simply send back a string
                     response = "got it"
+                elif decoded[1] == 'make change':
+                    # Send two ex commands at the same time, before replying to
+                    # the request.
+                    cmd = '["ex","call append(\\"$\\",\\"added1\\")"]'
+                    cmd += '["ex","call append(\\"$\\",\\"added2\\")"]'
+                    print("sending: {}".format(cmd))
+                    thesocket.sendall(cmd.encode('utf-8'))
+                    response = "ok"
+                elif decoded[1] == '!quit!':
+                    # we're done
+                    sys.exit(0)
                 else:
                     response = "what?"
+
                 encoded = json.dumps([decoded[0], response])
-                print("sending {}".format(encoded))
-                self.request.sendall(encoded.encode('utf-8'))
+                print("sending: {}".format(encoded))
+                thesocket.sendall(encoded.encode('utf-8'))
+
         thesocket = None
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
 
 if __name__ == "__main__":
-    HOST, PORT = "localhost", 8765
+    HOST, PORT = "localhost", 0
 
     server = ThreadedTCPServer((HOST, PORT), ThreadedTCPRequestHandler)
     ip, port = server.server_address
@@ -85,19 +99,12 @@ if __name__ == "__main__":
     # Exit the server thread when the main thread terminates
     server_thread.daemon = True
     server_thread.start()
-    print("Server loop running in thread: ", server_thread.name)
 
-    print("Listening on port {}".format(PORT))
-    while True:
-        typed = sys.stdin.readline()
-        if "quit" in typed:
-            print("Goodbye!")
-            break
-        if thesocket is None:
-            print("No socket yet")
-        else:
-            print("sending {}".format(typed))
-            thesocket.sendall(typed.encode('utf-8'))
+    # Write the port number in Xportnr, so that the test knows it.
+    f = open("Xportnr", "w")
+    f.write("{}".format(port))
+    f.close()
 
-    server.shutdown()
-    server.server_close()
+    # Block here
+    print("Listening on port {}".format(port))
+    server.serve_forever()
