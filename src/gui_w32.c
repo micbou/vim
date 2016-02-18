@@ -1670,6 +1670,7 @@ gui_mch_init(void)
     if (s_textArea == NULL)
 	return FAIL;
 
+#ifdef FEAT_LIBCALL
     /* Try loading an icon from $RUNTIMEPATH/bitmaps/vim.ico. */
     {
 	HANDLE	hIcon = NULL;
@@ -1677,6 +1678,7 @@ gui_mch_init(void)
 	if (mch_icon_load(&hIcon) == OK && hIcon != NULL)
 	    SendMessage(s_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
     }
+#endif
 
 #ifdef FEAT_MENU
     s_menuBar = CreateMenu();
@@ -1770,7 +1772,7 @@ gui_mch_init(void)
 # if !defined(_MSC_VER) || (_MSC_VER < 1400)
 /* Define HandleToLong for old MS and non-MS compilers if not defined. */
 #  ifndef HandleToLong
-#   define HandleToLong(h) ((long)(h))
+#   define HandleToLong(h) ((long)(intptr_t)(h))
 #  endif
 # endif
     /* set the v:windowid variable */
