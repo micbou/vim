@@ -178,8 +178,7 @@ def get_build_args(args, gui=True):
         if args.msvc == 14:
             build_args.append('XPM=no')
 
-    build_args.extend(['WINVER=0x0500',
-                       'FEATURES=HUGE',
+    build_args.extend(['FEATURES=HUGE',
                        'SNIFF=yes',
                        'MBYTE=yes',
                        'ICONV=yes',
