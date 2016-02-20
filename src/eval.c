@@ -9886,6 +9886,7 @@ get_job_options(typval_T *tv, jobopt_T *opt, int supported)
     int		todo;
     hashitem_T	*hi;
 
+    opt->jo_set = 0;
     if (tv->v_type == VAR_UNKNOWN)
 	return OK;
     if (tv->v_type != VAR_DICT)
@@ -13233,9 +13234,6 @@ f_has(typval_T *argvars, typval_T *rettv)
 #endif
 #ifdef VMS
 	"vms",
-#endif
-#ifdef WIN16
-	"win16",
 #endif
 #ifdef WIN32
 	"win32",
