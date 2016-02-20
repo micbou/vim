@@ -1,12 +1,11 @@
 version: "{build}"
-skip_non_tags: true
+#skip_non_tags: true
 environment:
     lua_version: 5.3.2
     perl_version: 5.22.1.2201
     perl_revision: 299574
     python2_version: 2.7.11
-    # TODO: try Python 3.5.
-    python3_version: 3.4.4
+    python3_version: 3.5.1
     racket_version: 6.3
     # TODO: bump to 2.3.0 when RubyInstaller for 2.3.0 is available.
     ruby_version: 2.2.0
