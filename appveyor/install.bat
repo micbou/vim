@@ -42,7 +42,7 @@ if %arch% == 32 (
 )
 set racket_installer_name=racket-minimal-%racket_version%-%racket_arch%-win32.exe
 
-appveyor DownloadFile https://mirror.racket-lang.org/releases/6.3/installers/%racket_installer_name%
+appveyor DownloadFile https://mirror.racket-lang.org/releases/%racket_version%/installers/%racket_installer_name%
 start /wait %racket_installer_name% /S /D=C:\Racket
 
 endlocal & set PATH=C:\Racket;%PATH%
