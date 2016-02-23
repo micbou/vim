@@ -628,6 +628,9 @@ static void f_insert(typval_T *argvars, typval_T *rettv);
 static void f_invert(typval_T *argvars, typval_T *rettv);
 static void f_isdirectory(typval_T *argvars, typval_T *rettv);
 static void f_islocked(typval_T *argvars, typval_T *rettv);
+#if defined(FEAT_FLOAT) && defined(HAVE_MATH_H)
+static void f_isnan(typval_T *argvars, typval_T *rettv);
+#endif
 static void f_items(typval_T *argvars, typval_T *rettv);
 #ifdef FEAT_JOB
 # ifdef FEAT_CHANNEL
@@ -8320,6 +8323,9 @@ static struct fst
     {"invert",		1, 1, f_invert},
     {"isdirectory",	1, 1, f_isdirectory},
     {"islocked",	1, 1, f_islocked},
+#if defined(FEAT_FLOAT) && defined(HAVE_MATH_H)
+    {"isnan",		1, 1, f_isnan},
+#endif
     {"items",		1, 1, f_items},
 #ifdef FEAT_JOB
 # ifdef FEAT_CHANNEL
@@ -10064,6 +10070,18 @@ get_job_options(typval_T *tv, jobopt_T *opt, int supported)
 		if (opt->jo_err_cb == NULL)
 		{
 		    EMSG2(_(e_invarg2), "err-cb");
+		    return FAIL;
+		}
+	    }
+	    else if (STRCMP(hi->hi_key, "close-cb") == 0)
+	    {
+		if (!(supported & JO_CLOSE_CALLBACK))
+		    break;
+		opt->jo_set |= JO_CLOSE_CALLBACK;
+		opt->jo_close_cb = get_callback(item);
+		if (opt->jo_close_cb == NULL)
+		{
+		    EMSG2(_(e_invarg2), "close-cb");
 		    return FAIL;
 		}
 	    }
@@ -13491,13 +13509,6 @@ f_has(typval_T *argvars, typval_T *rettv)
 #ifdef __BEOS__
 	"beos",
 #endif
-#ifdef MSDOS
-# ifdef DJGPP
-	"dos32",
-# else
-	"dos16",
-# endif
-#endif
 #ifdef MACOS
 	"mac",
 #endif
@@ -13666,7 +13677,11 @@ f_has(typval_T *argvars, typval_T *rettv)
 #endif
 #ifdef FEAT_GUI_GTK
 	"gui_gtk",
+# ifdef USE_GTK3
+	"gui_gtk3",
+# else
 	"gui_gtk2",
+# endif
 #endif
 #ifdef FEAT_GUI_GNOME
 	"gui_gnome",
@@ -14730,6 +14745,18 @@ f_islocked(typval_T *argvars, typval_T *rettv)
 
     clear_lval(&lv);
 }
+
+#if defined(FEAT_FLOAT) && defined(HAVE_MATH_H)
+/*
+ * "isnan()" function
+ */
+    static void
+f_isnan(typval_T *argvars, typval_T *rettv)
+{
+    rettv->vval.v_number = argvars[0].v_type == VAR_FLOAT
+					    && isnan(argvars[0].vval.v_float);
+}
+#endif
 
 static void dict_list(typval_T *argvars, typval_T *rettv, int what);
 
@@ -18924,7 +18951,7 @@ item_compare2(const void *s1, const void *s2)
 
     rettv.v_type = VAR_UNKNOWN;		/* clear_tv() uses this */
     res = call_func(sortinfo->item_compare_func,
-		 		 (int)STRLEN(sortinfo->item_compare_func),
+				 (int)STRLEN(sortinfo->item_compare_func),
 				 &rettv, 2, argv, 0L, 0L, &dummy, TRUE,
 				 sortinfo->item_compare_selfdict);
     clear_tv(&argv[0]);

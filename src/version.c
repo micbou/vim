@@ -749,6 +749,26 @@ static char *(features[]) =
 static int included_patches[] =
 {   /* Add new patch number below this line */
 /**/
+    1407,
+/**/
+    1406,
+/**/
+    1405,
+/**/
+    1404,
+/**/
+    1403,
+/**/
+    1402,
+/**/
+    1401,
+/**/
+    1400,
+/**/
+    1399,
+/**/
+    1398,
+/**/
     1397,
 /**/
     1396,
@@ -3707,13 +3727,6 @@ list_version(void)
 #  endif
 # endif
 #endif
-#ifdef MSDOS
-# ifdef DJGPP
-    MSG_PUTS(_("\n32-bit MS-DOS version"));
-# else
-    MSG_PUTS(_("\n16-bit MS-DOS version"));
-# endif
-#endif
 #ifdef MACOS
 # ifdef MACOS_X
 #  ifdef MACOS_X_UNIX
@@ -3823,11 +3836,15 @@ list_version(void)
     MSG_PUTS(_("without GUI."));
 #else
 # ifdef FEAT_GUI_GTK
-#  ifdef FEAT_GUI_GNOME
-    MSG_PUTS(_("with GTK2-GNOME GUI."));
+#  ifdef USE_GTK3
+    MSG_PUTS(_("with GTK3 GUI."));
 #  else
-    MSG_PUTS(_("with GTK2 GUI."));
-#  endif
+#   ifdef FEAT_GUI_GNOME
+     MSG_PUTS(_("with GTK2-GNOME GUI."));
+#   else
+     MSG_PUTS(_("with GTK2 GUI."));
+#   endif
+# endif
 # else
 #  ifdef FEAT_GUI_MOTIF
     MSG_PUTS(_("with X11-Motif GUI."));
