@@ -179,7 +179,6 @@ def get_build_args(args, gui=True):
             build_args.append('XPM=no')
 
     build_args.extend(['FEATURES=HUGE',
-                       'SNIFF=yes',
                        'MBYTE=yes',
                        'ICONV=yes',
                        'DEBUG=no'])
