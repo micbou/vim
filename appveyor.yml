@@ -16,24 +16,42 @@ environment:
     bintray_api_key:
         secure: B1GlaWpEZ4f1oU6Hfi0XKe/LUoqJgJVUtXP8QxENtezlyNDqvRMfw1gX7btpEYk9
     matrix:
+        - arch: 32
+          msvc: 11
+          optimize: space
+        - arch: 32
+          msvc: 11
+          optimize: speed
+        - arch: 32
+          msvc: 11
+          optimize: maxspeed
+        - arch: 32
+          msvc: 12
+          optimize: space
+        - arch: 32
+          msvc: 12
+          optimize: speed
+        - arch: 32
+          msvc: 12
+          optimize: maxspeed
         - arch: 64
           msvc: 11
           optimize: space
-    #        - arch: 64
-    #          msvc: 11
-    #          optimize: speed
-    #        - arch: 64
-    #          msvc: 11
-    #          optimize: maxspeed
-    #        - arch: 64
-    #          msvc: 12
-    #          optimize: space
-    #        - arch: 64
-    #          msvc: 12
-    #          optimize: speed
-    #        - arch: 64
-    #          msvc: 12
-    #          optimize: maxspeed
+        - arch: 64
+          msvc: 11
+          optimize: speed
+        - arch: 64
+          msvc: 11
+          optimize: maxspeed
+        - arch: 64
+          msvc: 12
+          optimize: space
+        - arch: 64
+          msvc: 12
+          optimize: speed
+        - arch: 64
+          msvc: 12
+          optimize: maxspeed
 matrix:
     allow_failures:
         # We allow failures for MSVC 14 because Ruby 2.2.0 cannot be compiled with
@@ -42,7 +60,7 @@ matrix:
 install:
     - appveyor\install.bat
 build_script:
-    - python appveyor\build.py --msvc %msvc% --arch %arch% --lua-version %lua_version% --perl-version %perl_version% --python2-version %python2_version% --python3-version %python3_version% --racket --ruby-version %ruby_version% --tcl-version %tcl_version% --credit "%vim_compilation_credit%"
+    - python appveyor\build.py --msvc %msvc% --arch %arch% --lua-version %lua_version% --perl-version %perl_version% --python2-version %python2_version% --python3-version %python3_version% --racket --ruby-version %ruby_version% --tcl-version %tcl_version% --optimize %optimize% --credit "%vim_compilation_credit%"
     - appveyor\variables.bat
     - python appveyor\package.py %vim_artifact%
 test_script:
