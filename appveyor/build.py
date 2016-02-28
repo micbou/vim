@@ -46,6 +46,9 @@ def get_arch_build_args(args):
 
 
 def get_lua_build_args(args):
+    if not args.lua_version:
+        return []
+
     lua_version = get_minimal_version(args.lua_version)
 
     return ['LUA={0}'.format(args.lua_path),
@@ -63,6 +66,9 @@ def get_perl_path(args):
 
 
 def get_perl_build_args(args):
+    if not args.perl_version:
+        return []
+
     perl_path = get_perl_path(args)
     perl_version = get_minimal_version(args.perl_version)
 
@@ -94,21 +100,29 @@ def get_python3_path(args):
 
 
 def get_pythons_build_args(args):
-    python2_path = get_python2_path(args)
-    python3_path = get_python3_path(args)
+    pythons_args = []
 
-    python2_version = get_minimal_version(args.python2_version)
-    python3_version = get_minimal_version(args.python3_version)
+    if args.python2_version:
+        python2_path = get_python2_path(args)
+        python2_version = get_minimal_version(args.python2_version)
+        pythons_args.extend(['PYTHON_VER={0}'.format(python2_version),
+                             'DYNAMIC_PYTHON=yes',
+                             'PYTHON={0}'.format(python2_path)])
 
-    return ['PYTHON_VER={0}'.format(python2_version),
-            'DYNAMIC_PYTHON=yes',
-            'PYTHON={0}'.format(python2_path),
-            'PYTHON3_VER={0}'.format(python3_version),
-            'DYNAMIC_PYTHON3=yes',
-            'PYTHON3={0}'.format(python3_path)]
+    if args.python3_version:
+        python3_path = get_python3_path(args)
+        python3_version = get_minimal_version(args.python3_version)
+        pythons_args.extend(['PYTHON3_VER={0}'.format(python3_version),
+                             'DYNAMIC_PYTHON3=yes',
+                             'PYTHON3={0}'.format(python3_path)])
+
+    return pythons_args
 
 
 def get_racket_build_args(args):
+    if not args.racket:
+        return []
+
     return ['MZSCHEME={0}'.format(args.racket_path),
             'MZSCHEME_VER={0}'.format(args.racket_library),
             'DYNAMIC_MZSCHEME=yes']
@@ -126,6 +140,9 @@ def get_ruby_path(args):
 
 
 def get_ruby_build_args(args):
+    if not args.ruby_version:
+        return []
+
     ruby_path = get_ruby_path(args)
     ruby_ver_long = args.ruby_version
     ruby_ver = get_minimal_version(args.ruby_version)
@@ -138,6 +155,9 @@ def get_ruby_build_args(args):
 
 
 def get_tcl_build_args(args):
+    if not args.tcl_version:
+        return []
+
     tcl_ver_long = get_major_minor_version(args.tcl_version)
     tcl_ver = get_minimal_version(args.tcl_version)
 
@@ -302,6 +322,7 @@ def parse_arguments():
                         'or C:\Python{ver}-x64 depending on architecture)')
     parser.add_argument('--python3-version', type = str,
                         help = 'set Python3 version')
+    parser.add_argument('--racket', action='store_true', help = 'enable Racket')
     parser.add_argument('--racket-path', type = str, default = 'C:\Racket',
                         help = 'set Racket folder (default: C:\Racket)')
     parser.add_argument('--racket-library', type = str, default = '3m_9z0ds0',
