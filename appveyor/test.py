@@ -3,6 +3,7 @@
 import argparse
 import os
 import subprocess
+import time
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath( __file__ ))
 ROOT_DIR = os.path.join(SCRIPT_DIR, '..')
@@ -41,7 +42,9 @@ def test_vim(args):
                 'Make_dos.mak',
                 'VIMPROG={0}'.format(gvim_path)]
 
+    current_time = time.time()
     subprocess.check_call(test_cmd)
+    print( 'Time elapsed: ' + str( time.time() - current_time ) )
 
 
 def parse_arguments():
