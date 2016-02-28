@@ -334,12 +334,17 @@ channel_still_useful(channel_T *channel)
  * Close a channel and free all its resources if there is no further action
  * possible, there is no callback to be invoked or the associated job was
  * killed.
+ * Return TRUE if the channel was freed.
  */
-    void
+    int
 channel_may_free(channel_T *channel)
 {
     if (!channel_still_useful(channel))
+    {
 	channel_free(channel);
+	return TRUE;
+    }
+    return FALSE;
 }
 
 /*
@@ -940,10 +945,15 @@ invoke_callback(channel_T *channel, char_u *callback, typval_T *argv)
     clear_tv(&rettv);
 
     /* If an echo command was used the cursor needs to be put back where
-     * it belongs. */
+     * it belongs. If highlighting was changed a redraw is needed. */
+    update_screen(0);
     setcursor();
     cursor_on();
     out_flush();
+#ifdef FEAT_GUI
+    gui_update_cursor(TRUE, FALSE);
+    gui_mch_flush();
+#endif
 }
 
 /*
