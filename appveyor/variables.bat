@@ -14,6 +14,8 @@ if %arch% == 32 (
     set vim_arch=x64
 )
 
+set vim_executable_name=vim%vim_version%-%vim_arch%.exe
+
 :: Get major.minor version from full version
 for /F "tokens=1,2 delims=." %%a in ("%lua_version%") do (
    set lua_major_minor_version=%%a.%%b
@@ -38,6 +40,7 @@ for /F "tokens=1,2 delims=." %%a in ("%tcl_version%") do (
 )
 
 endlocal & (
-    set vim_artifact=vim%vim_version%-%vim_arch%.exe
+    set vim_artifact=%vim_executable_name%
     set vim_description=Vim %vim_version% 32-bit and 64-bit for Windows with Lua %lua_major_minor_version%, Perl %perl_major_minor_version%, Python %python2_major_minor_version%, Python %python3_major_minor_version%, Racket %racket_major_minor_version%, Ruby %ruby_major_minor_version%, and Tcl %tcl_major_minor_version% support. Compiled with MSVC %msvc%.
+    set vim_tweet=Vim %vim_version% %arch%-bit for Windows released: https://bintray.com/artifact/download/%bintray_username%/generic/%vim_executable_name%
 )

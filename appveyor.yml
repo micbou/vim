@@ -15,6 +15,14 @@ environment:
     bintray_username: micbou
     bintray_api_key:
         secure: B1GlaWpEZ4f1oU6Hfi0XKe/LUoqJgJVUtXP8QxENtezlyNDqvRMfw1gX7btpEYk9
+    twitter_consumer_key:
+        secure: aohf6ZTz+kDR1CpuSXhDgCEqWe0/k7M1MfNtMlNwRLw=
+    twitter_consumer_secret:
+        secure: 4ZR4VoPu/8/a/tMPpMM41vwcAz+OeYfQ4dfiE99Pmqz0dSCiDpsO22cC11Sr53BcK+UZzQBH68ppB71nmjk6Mw==
+    twitter_access_token:
+        secure: KBY9gZq2RJzAIHCea6h+nTCIBiNQgTipI3lL0WPz1N6GXuOgikVQWWuaf+cFhXL0Lh2UgQuFHm2zDByFSXmkMQ==
+    twitter_access_token_secret:
+        secure: z66tC6HWZZ7dXS5SG49amgEGBfR6vX3SXQUjgV1GmFuaVFDXr67XZfK/dG3x8+pA
     matrix:
         - arch: 32
           msvc: 11
@@ -58,9 +66,10 @@ deploy:
           branch: master
           appveyor_repo_tag: true
           msvc: 12
-# Deploy to Bintray
+# Deploy to Bintray and send a tweet
 after_deploy:
     - python appveyor\bintray.py upload generic vim %vim_version% nsis\%vim_artifact% --override
     - python appveyor\bintray.py update-version generic vim %vim_version% "%vim_description%" --vcs-tag %appveyor_repo_tag_name%
     - python appveyor\bintray.py publish generic vim %vim_version%
     - python appveyor\bintray.py download-list generic %vim_artifact% add
+    - python appveyor\twitt.py "%vim_tweet%"
