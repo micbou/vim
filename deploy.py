@@ -5,7 +5,7 @@ import os
 import subprocess
 from distutils.spawn import find_executable
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath( __file__ ))
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def deploy(args):
@@ -24,10 +24,10 @@ def deploy(args):
     subprocess.check_call([git, 'merge', 'upstream/master', '--no-edit'])
 
     # Get the latest tag
-    latest_commit = subprocess.check_output([git, 'rev-list', '--tags',
-                                             '--max-count=1'])
-    latest_tag = subprocess.check_output([git, 'describe', '--tags',
-                                          latest_commit])
+    latest_commit = subprocess.check_output(
+        [git, 'rev-list', '--tags', '--max-count=1']).strip().decode('utf8')
+    latest_tag = subprocess.check_output(
+        [git, 'describe', '--tags', latest_commit]).strip().decode('utf8')
 
     # Set this tag to the last commit
     subprocess.check_call([git, 'tag', '-f', latest_tag])
@@ -37,8 +37,8 @@ def deploy(args):
 
     # Remove upstream tag in case it already exists
     if len(subprocess.check_output([git, 'ls-remote', 'origin', latest_tag])):
-      subprocess.check_call([git, 'push', 'origin',
-                             ':{0}'.format( latest_tag )])
+        subprocess.check_call([git, 'push', 'origin',
+                               ':{0}'.format(latest_tag)])
 
     # Push the tag
     subprocess.check_call([git, 'push', 'origin', latest_tag])
