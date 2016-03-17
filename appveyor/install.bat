@@ -152,7 +152,7 @@ set PATH=C:\upx391w;%PATH%
 appveyor DownloadFile https://bootstrap.pypa.io/get-pip.py
 python get-pip.py
 set PATH=C:\Python27\Scripts;%PATH%
-pip install requests
+pip install requests twitter
 
 :: Fix test86 failure introduced by python 2.7.11
 :: TODO: check if this is still needed when python 2.7.12 is released.
