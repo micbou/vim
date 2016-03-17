@@ -173,7 +173,7 @@ def parse_arguments():
     parser.add_argument('--username', type = str,
                         help = 'bintray username (default: value from '
                                '"bintray_username" environment variable.')
-    parser.add_argument('--api_key', type = str,
+    parser.add_argument('--api-key', type = str,
                         help = 'bintray API key (default: value from '
                                '"bintray_api_key" environment variable.')
     parser.add_argument('--retries', type = int, default = 3,
