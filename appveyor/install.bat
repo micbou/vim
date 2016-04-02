@@ -119,11 +119,10 @@ start /wait %tcl_installer_name% --directory C:\Tcl
 endlocal & set PATH=C:\Tcl\bin;%PATH%
 
 ::
-:: Get diff.exe from old gvim binaries.
+:: Move diff.exe to parent folder.
 ::
-curl -sSL -O ftp://ftp.vim.org/pub/vim/pc/gvim74.exe
+move /Y diff.exe ..
 if %errorlevel% neq 0 exit /b %errorlevel%
-7z e gvim74.exe $0\diff.exe -o..
 
 ::
 :: Get libintl.dll, iconv.dll, and possibly libwinpthread.dll.
