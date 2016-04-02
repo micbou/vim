@@ -1,7 +1,10 @@
 ::
 :: Install Lua
 ::
-curl -fssL -o lua.zip "http://sourceforge.net/projects/luabinaries/files/%lua_version%/Windows%%20Libraries/Dynamic/lua-%lua_version%_Win%arch%_dllw4_lib.zip/download"
+curl -ssL -o lua.zip "http://sourceforge.net/projects/luabinaries/files/%lua_version%/Windows%%20Libraries/Dynamic/lua-%lua_version%_Win%arch%_dllw4_lib.zip/download"
+:: Batch script will not exit if a command returns an error, so we manually do
+:: it for commands that may fail.
+if %errorlevel% neq 0 exit /b %errorlevel%
 7z x lua.zip -oC:\Lua > nul
 set PATH=C:\Lua;%PATH%
 
@@ -20,6 +23,7 @@ if %arch% == 32 (
 set perl_folder=ActivePerl-%perl_version%-MSWin32-%perl_arch%-%perl_revision%
 
 appveyor DownloadFile http://downloads.activestate.com/ActivePerl/releases/%perl_version%/%perl_folder%.zip
+if %errorlevel% neq 0 exit /b %errorlevel%
 7z x %perl_folder%.zip -oC:\ > nul
 
 :: Deduce minimal version format from full version (ex: 5.22.1.2201 gives 522).
@@ -43,6 +47,7 @@ if %arch% == 32 (
 set racket_installer_name=racket-minimal-%racket_version%-%racket_arch%-win32.exe
 
 appveyor DownloadFile https://mirror.racket-lang.org/releases/%racket_version%/installers/%racket_installer_name%
+if %errorlevel% neq 0 exit /b %errorlevel%
 start /wait %racket_installer_name% /S /D=C:\Racket
 
 endlocal & set PATH=C:\Racket;%PATH%
@@ -62,6 +67,7 @@ for /F "tokens=1,2 delims=." %%a in ("%ruby_version%") do (
 )
 
 git clone https://github.com/ruby/ruby.git -b %ruby_branch% --depth 1 -q %APPVEYOR_BUILD_FOLDER%\ruby
+if %errorlevel% neq 0 exit /b %errorlevel%
 pushd %APPVEYOR_BUILD_FOLDER%\ruby
 
 if %msvc% == 11 (
@@ -107,20 +113,22 @@ if %arch% == 32 (
 set tcl_installer_name=ActiveTcl%tcl_version%.%tcl_revision%-win32-%tcl_arch%-threaded.exe
 
 appveyor DownloadFile http://downloads.activestate.com/ActiveTcl/releases/%tcl_version%/%tcl_installer_name%
+if %errorlevel% neq 0 exit /b %errorlevel%
 start /wait %tcl_installer_name% --directory C:\Tcl
 
 endlocal & set PATH=C:\Tcl\bin;%PATH%
 
 ::
-:: Get diff.exe from old gvim binaries.
+:: Move diff.exe to parent folder.
 ::
-curl -fssL -O ftp://ftp.vim.org/pub/vim/pc/gvim74.exe
-7z e gvim74.exe $0\diff.exe -o..
+move /Y diff.exe ..
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 ::
 :: Get libintl.dll, iconv.dll, and possibly libwinpthread.dll.
 ::
 appveyor DownloadFile https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.19.6-v1.14/gettext0.19.6-iconv1.14-shared-64.exe
+if %errorlevel% neq 0 exit /b %errorlevel%
 start /wait gettext0.19.6-iconv1.14-shared-64.exe /verysilent /dir=c:\gettext
 copy C:\gettext\libintl-8.dll %APPVEYOR_BUILD_FOLDER%\runtime
 copy C:\gettext\libiconv-2.dll %APPVEYOR_BUILD_FOLDER%\runtime
@@ -134,14 +142,16 @@ set PATH=C:\gettext;%PATH%
 ::
 :: Install NSIS.
 ::
-curl -fsSL -o nsis-3.0b2-setup.exe http://prdownloads.sourceforge.net/nsis/nsis-3.0b2-setup.exe
+curl -sSL -o nsis-3.0b2-setup.exe http://prdownloads.sourceforge.net/nsis/nsis-3.0b2-setup.exe
+if %errorlevel% neq 0 exit /b %errorlevel%
 nsis-3.0b2-setup.exe /S
 set PATH=C:\Program Files (x86)\NSIS;%PATH%
 
 ::
 :: Install UPX.
 ::
-curl -fsSL -o upx391w.zip http://upx.sourceforge.net/download/upx391w.zip
+curl -sSL -o upx391w.zip http://upx.sourceforge.net/download/upx391w.zip
+if %errorlevel% neq 0 exit /b %errorlevel%
 7z x upx391w.zip -oC:\ > nul
 set PATH=C:\upx391w;%PATH%
 
@@ -150,6 +160,7 @@ set PATH=C:\upx391w;%PATH%
 ::
 
 appveyor DownloadFile https://bootstrap.pypa.io/get-pip.py
+if %errorlevel% neq 0 exit /b %errorlevel%
 python get-pip.py
 set PATH=C:\Python27\Scripts;%PATH%
 pip install requests twitter

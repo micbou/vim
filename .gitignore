@@ -22,6 +22,7 @@ src/auto/pathdef.c
 
 # Windows
 *.exe
+!diff.exe
 *.idb
 *.manifest
 *.exp
