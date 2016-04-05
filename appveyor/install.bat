@@ -1,3 +1,5 @@
+:: TODO: convert to PowerShell script
+
 ::
 :: Install Lua
 ::
