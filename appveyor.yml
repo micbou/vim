@@ -25,13 +25,9 @@ environment:
         secure: z66tC6HWZZ7dXS5SG49amgEGBfR6vX3SXQUjgV1GmFuaVFDXr67XZfK/dG3x8+pA
     matrix:
         - arch: 32
-          msvc: 11
-        - arch: 32
           msvc: 12
         - arch: 32
           msvc: 14
-        - arch: 64
-          msvc: 11
         - arch: 64
           msvc: 12
         - arch: 64
