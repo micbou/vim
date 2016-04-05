@@ -41,7 +41,7 @@ install:
     - appveyor\install.bat
 build_script:
     - python appveyor\build.py --msvc %msvc% --arch %arch% --lua-version %lua_version% --perl-version %perl_version% --python2-version %python2_version% --python3-version %python3_version% --racket --ruby-version %ruby_version% --tcl-version %tcl_version% --credit "%vim_compilation_credit%"
-    - appveyor\variables.bat
+    - ps: appveyor\variables.ps1
     - python appveyor\package.py %vim_artifact%
 test_script:
     - python appveyor\test.py --msvc %msvc%
@@ -51,7 +51,7 @@ artifacts:
 deploy:
     - tag: $(appveyor_repo_tag_name)
       release: $(vim_version)
-      description: $(vim_description)
+      description: $(vim_release_notes)
       provider: GitHub
       auth_token:
           secure: gm7NWc/q5jrfYIipgRGs8Xd8+4BmWeEAEgfnCJYcu2EpgFdAxIMcT6ixBCE2gg5F
