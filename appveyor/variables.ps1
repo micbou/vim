@@ -14,9 +14,9 @@
 # Output environment variables:
 #   vim_version: Vim version in X.Y.Z form
 #   vim_artifact: Vim executable name
-#   vim_description: description on Bintray
-#   vim_release_notes: release notes on GitHub
 #   vim_tweet: message send on Twitter
+#   git_description: release notes on GitHub
+#   bintray_description: description on Bintray
 
 function GetMajorMinorVersion($version) {
     $version_array = $version.Split('.')
@@ -25,11 +25,12 @@ function GetMajorMinorVersion($version) {
 
 $vim_version = $env:appveyor_repo_tag_name.Substring(1)
 
-if ($env:arch) {
+if ($env:arch -eq 32) {
     $vim_arch = "x86"
 } else {
     $vim_arch = "x64"
 }
+Write-Host $vim_arch
 
 $vim_executable_name = "vim$vim_version-$vim_arch.exe"
 
@@ -41,16 +42,12 @@ $racket_major_minor_version = GetMajorMinorVersion $env:racket_version
 $ruby_major_minor_version = GetMajorMinorVersion $env:ruby_version
 $tcl_major_minor_version = GetMajorMinorVersion $env:tcl_version
 
-$logs = (git show -s --pretty=format:%b $appveyor_repo_tag_name) | Out-String
+$logs = (git show -s --pretty=format:%b $env:appveyor_repo_tag_name) | Out-String
+# AppVeyor uses "\n" as a convention for newlines in GitHub description
+$git_description = $logs.Replace("`r`n", "\n")
 
 $env:vim_version = $vim_version
 $env:vim_artifact = $vim_executable_name
-$env:vim_description = "Vim $vim_version 32-bit and 64-bit for Windows with Lua $lua_major_minor_version, Perl $perl_major_minor_version, Python $python2_major_minor_version, Python $python3_major_minor_version, Racket $racket_major_minor_version, Ruby $ruby_major_minor_version, and Tcl $tcl_major_minor_version support. Compiled with MSVC $msvc."
-$env:vim_release_notes = $logs
-$env:vim_tweet = "Vim $vim_version $arch-bit for Windows released: https://bintray.com/artifact/download/$bintray_username/generic/$vim_executable_name"
-
-Write-Host $env:vim_version
-Write-Host $env:vim_artifact
-Write-Host $env:vim_description
-Write-Host $env:vim_release_notes
-Write-Host $env:vim_tweet
+$env:vim_tweet = "Vim $vim_version $env:arch-bit for Windows released: https://bintray.com/artifact/download/$env:bintray_username/generic/$vim_executable_name"
+$env:bintray_description = "Vim $vim_version 32-bit and 64-bit for Windows with Lua $lua_major_minor_version, Perl $perl_major_minor_version, Python $python2_major_minor_version, Python $python3_major_minor_version, Racket $racket_major_minor_version, Ruby $ruby_major_minor_version, and Tcl $tcl_major_minor_version support. Compiled with MSVC $env:msvc."
+$env:git_description = $git_description

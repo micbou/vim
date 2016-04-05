@@ -51,7 +51,7 @@ artifacts:
 deploy:
     - tag: $(appveyor_repo_tag_name)
       release: $(vim_version)
-      description: $(vim_release_notes)
+      description: $(git_description)
       provider: GitHub
       auth_token:
           secure: gm7NWc/q5jrfYIipgRGs8Xd8+4BmWeEAEgfnCJYcu2EpgFdAxIMcT6ixBCE2gg5F
@@ -65,7 +65,7 @@ deploy:
 # Deploy to Bintray and send a tweet
 after_deploy:
     - python appveyor\bintray.py upload generic vim %vim_version% nsis\%vim_artifact% --override
-    - python appveyor\bintray.py update-version generic vim %vim_version% "%vim_description%" --vcs-tag %appveyor_repo_tag_name%
+    - python appveyor\bintray.py update-version generic vim %vim_version% "%bintray_description%" --vcs-tag %appveyor_repo_tag_name%
     - python appveyor\bintray.py publish generic vim %vim_version%
     - python appveyor\bintray.py download-list generic %vim_artifact% add
     - python appveyor\twitt.py "%vim_tweet%"
