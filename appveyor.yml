@@ -24,19 +24,12 @@ environment:
     twitter_access_token_secret:
         secure: z66tC6HWZZ7dXS5SG49amgEGBfR6vX3SXQUjgV1GmFuaVFDXr67XZfK/dG3x8+pA
     matrix:
+        # TODO: Ruby 2.2.0 cannot be compiled with MSVC 14. Try it when Ruby
+        # 2.3.0 is available on AppVeyor.
         - arch: 32
           msvc: 12
-        - arch: 32
-          msvc: 14
         - arch: 64
           msvc: 12
-        - arch: 64
-          msvc: 14
-matrix:
-    allow_failures:
-        # We allow failures for MSVC 14 because Ruby 2.2.0 cannot be compiled with
-        # this version of MSVC. This is fixed in release 2.3.0.
-        - msvc: 14
 install:
     - appveyor\install.bat
 build_script:
