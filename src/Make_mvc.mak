@@ -449,9 +449,19 @@ CPUARG = /arch:SSE2
 LIBC =
 DEBUGINFO = /Zi
 
-# Don't use /nodefaultlib on MSVC 14
+# Cannot use /nodefaultlib alone on MSVC 14.
 !if $(MSVC_MAJOR) >= 14
+! ifdef USE_MSVCRT
 NODEFAULTLIB =
+! else
+# Fix following warning on both architectures:
+#   libcmt.lib(initializers.obj) : warning LNK4098: defaultlib 'msvcrt.lib'
+#   conflicts with use of other libs; use /NODEFAULTLIB:library
+# and following error on 32-bit:
+#   msvcrt.lib(_chandler4gs_.obj) : error LNK2001: unresolved external symbol
+#   __except_handler4_common
+NODEFAULTLIB = /nodefaultlib:msvcrt.lib
+! endif
 !else
 NODEFAULTLIB = /nodefaultlib
 !endif
