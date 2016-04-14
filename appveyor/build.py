@@ -191,11 +191,6 @@ def get_build_args(args, gui=True):
                            'OLE=yes',
                            'GIME=yes',
                            'DIRECTX=yes'])
-        # MSVC 14 will fail to build gvim with XPM image support enabled.
-        # See https://groups.google.com/forum/#!topic/vim_dev/6DfnCX9TjYI
-        # TODO: find a way to fix this.
-        if args.msvc == 14:
-            build_args.append('XPM=no')
 
     build_args.extend(['FEATURES=HUGE',
                        'IME=yes',

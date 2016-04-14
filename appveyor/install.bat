@@ -68,7 +68,7 @@ for /F "tokens=1,2 delims=." %%a in ("%ruby_version%") do (
    set ruby_minimal_version=%%a%%b
 )
 
-git clone https://github.com/ruby/ruby.git -b %ruby_branch% --depth 1 -q %APPVEYOR_BUILD_FOLDER%\ruby
+git clone -q https://github.com/ruby/ruby.git -b %ruby_branch% --depth 1 %APPVEYOR_BUILD_FOLDER%\ruby
 if %errorlevel% neq 0 exit /b %errorlevel%
 pushd %APPVEYOR_BUILD_FOLDER%\ruby
 
@@ -119,6 +119,43 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 start /wait %tcl_installer_name% --directory C:\Tcl
 
 endlocal & set PATH=C:\Tcl\bin;%PATH%
+
+::
+:: Build XPM library
+::
+setlocal
+
+git clone -q https://github.com/koron/libXpm-win32 %APPVEYOR_BUILD_FOLDER%\xpm
+
+pushd %APPVEYOR_BUILD_FOLDER%\xpm
+
+git reset --hard 484e01c1e33419735f319fa1490c23dad52913fa
+
+if %msvc% == 11 (
+    set vc_vars_script_path="%VS110COMNTOOLS%\..\..\VC\vcvarsall.bat"
+)
+if %msvc% == 12 (
+    set vc_vars_script_path="%VS120COMNTOOLS%\..\..\VC\vcvarsall.bat"
+)
+if %msvc% == 14 (
+    set vc_vars_script_path="%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat"
+)
+
+if %arch% == 32 (
+    set xpm_arch=x86
+    call %vc_vars_script_path% x86
+) else (
+    set xpm_arch=x64
+    call %vc_vars_script_path% x86_amd64
+)
+
+cd %APPVEYOR_BUILD_FOLDER%\xpm\src
+nmake Make_msvc_lib.mak
+xcopy /Y libXpm.lib %APPVEYOR_BUILD_FOLDER%\src\xpm\%xpm_arch%\lib
+
+popd
+
+endlocal
 
 ::
 :: Move diff.exe to parent folder.
