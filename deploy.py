@@ -55,6 +55,13 @@ def deploy(args):
     # Fetch upstream remote
     subprocess.check_call([git, 'fetch', 'upstream'])
 
+    # Check if upstream contains changes
+    changes = subprocess.check_output([git, 'log', '--oneline',
+                                       'HEAD..upstream/master'])
+    if not changes:
+        print('No upstream changes.')
+        return
+
     # Format logs
     patches = subprocess.check_output(
       [git, 'log', '--pretty=format:%s',
