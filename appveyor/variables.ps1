@@ -30,7 +30,6 @@ if ($env:arch -eq 32) {
 } else {
     $vim_arch = "x64"
 }
-Write-Host $vim_arch
 
 $vim_executable_name = "vim$vim_version-$vim_arch.exe"
 
