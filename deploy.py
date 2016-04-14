@@ -52,7 +52,7 @@ def deploy(args):
     # Switch to master branch
     subprocess.check_call([git, 'checkout', 'master'])
 
-    # Fetch and merge upstream master branch
+    # Fetch upstream remote
     subprocess.check_call([git, 'fetch', 'upstream'])
 
     # Format logs
@@ -61,6 +61,7 @@ def deploy(args):
        'master..upstream/master']).strip().decode('utf8')
     logs = format_logs(patches)
 
+    # Merge upstream master branch
     subprocess.check_call([git, 'merge', '--no-edit', 'upstream/master'])
 
     # Get the latest tag
