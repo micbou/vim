@@ -3567,32 +3567,22 @@ ins_compl_addleader(int c)
 	(*mb_char2bytes)(c, buf);
 	buf[cc] = NUL;
 	ins_char_bytes(buf, cc);
-	if (compl_opt_refresh_always)
-	    AppendToRedobuff(buf);
     }
     else
 #endif
     {
 	ins_char(c);
-	if (compl_opt_refresh_always)
-	    AppendCharToRedobuff(c);
     }
 
     /* If we didn't complete finding matches we must search again. */
     if (ins_compl_need_restart())
 	ins_compl_restart();
 
-    /* When 'always' is set, don't reset compl_leader. While completing,
-     * cursor doesn't point original position, changing compl_leader would
-     * break redo. */
-    if (!compl_opt_refresh_always)
-    {
-	vim_free(compl_leader);
-	compl_leader = vim_strnsave(ml_get_curline() + compl_col,
-				     (int)(curwin->w_cursor.col - compl_col));
-	if (compl_leader != NULL)
-	    ins_compl_new_leader();
-    }
+    vim_free(compl_leader);
+    compl_leader = vim_strnsave(ml_get_curline() + compl_col,
+                                (int)(curwin->w_cursor.col - compl_col));
+    if (compl_leader != NULL)
+        ins_compl_new_leader();
 }
 
 /*
@@ -3989,7 +3979,13 @@ ins_compl_fixRedoBufForLeader(char_u *ptr_arg)
     }
     else
 	len = 0;
-    if (ptr != NULL)
+
+    /*
+    * Don't insert the typed characters into the redo buffer here when refresh
+    * always is set. The characters are already inserted when the leader is
+    * reset. Add characters to the buffer from a chosen completion in any case.
+    */
+    if (ptr != NULL && (!compl_opt_refresh_always || compl_used_match))
 	AppendToRedobuffLit(ptr + len, -1);
 }
 
