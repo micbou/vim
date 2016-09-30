@@ -2632,8 +2632,16 @@ ins_compl_add(
     static int
 ins_compl_equal(compl_T *match, char_u *str, int len)
 {
+    /*
+     * When the refresh option is set to 'always', let the completion function
+     * filter the matches itself.
+     */
+    if (compl_opt_refresh_always)
+	return TRUE;
+
     if (match->cp_icase)
 	return STRNICMP(match->cp_str, str, (size_t)len) == 0;
+
     return STRNCMP(match->cp_str, str, (size_t)len) == 0;
 }
 
