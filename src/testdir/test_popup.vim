@@ -16,6 +16,14 @@ func! ListMonths()
   return ''
 endfunc
 
+function! CompleteMonthsWithRefreshAlways(findstart, base)
+  if a:findstart
+    return 0
+  else
+    return {'words': g:months, 'refresh': 'always'}
+  endif
+endfunction
+
 func! Test_popup_complete2()
   " Although the popupmenu is not visible, this does not mean completion mode
   " has ended. After pressing <f5> to complete the currently typed char, Vim
@@ -288,5 +296,13 @@ func Test_compl_vim_cmds_after_register_expr()
   augroup! AAAAA_Group
   bwipe!
 endfunc
+
+function! Test_popup_complete_refresh_always_add_character_to_leader()
+  new
+  set completefunc=CompleteMonthsWithRefreshAlways
+  call feedkeys("iJ\<C-X>\<C-U>\<C-P>a\<C-N>\<esc>", 'tx')
+  call assert_equal("January", getline(1))
+  %d
+endfunction
 
 " vim: shiftwidth=2 sts=2 expandtab
