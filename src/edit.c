@@ -345,6 +345,7 @@ edit(
     int		inserted_space = FALSE;     /* just inserted a space */
     int		replaceState = REPLACE;
     int		nomove = FALSE;		    /* don't move cursor on return */
+    int		save_did_ai = did_ai;
 
     /* Remember whether editing was restarted after CTRL-O. */
     did_restart_edit = restart_edit;
@@ -1453,6 +1454,7 @@ docomplete:
 	    compl_busy = TRUE;
 	    disable_fold_update++;  /* don't redraw folds here */
 	    if (ins_complete(c, TRUE) == FAIL)
+		did_ai = save_did_ai;
 		compl_cont_status = 0;
 	    disable_fold_update--;
 	    compl_busy = FALSE;
@@ -3517,6 +3519,8 @@ ins_compl_need_restart(void)
     static void
 ins_compl_new_leader(void)
 {
+    int save_did_ai = did_ai;
+
     ins_compl_del_pum();
     ins_compl_delete();
     ins_bytes(compl_leader + ins_compl_len());
@@ -3546,6 +3550,7 @@ ins_compl_new_leader(void)
 #endif
 	compl_restarting = TRUE;
 	if (ins_complete(Ctrl_N, TRUE) == FAIL)
+	    did_ai = save_did_ai;
 	    compl_cont_status = 0;
 	compl_restarting = FALSE;
     }
@@ -5103,7 +5108,7 @@ ins_complete(int c, int enable_pum)
     {
 	/* First time we hit ^N or ^P (in a row, I mean) */
 
-	did_ai = FALSE;
+	//did_ai = FALSE;
 #ifdef FEAT_SMARTINDENT
 	did_si = FALSE;
 	can_si = FALSE;
