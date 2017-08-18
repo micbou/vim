@@ -832,7 +832,7 @@ TCL_VER_LONG = 8.6
 !message Tcl requested (version $(TCL_VER)) - root dir is "$(TCL)"
 !if "$(DYNAMIC_TCL)" == "yes"
 !message Tcl DLL will be loaded dynamically
-TCL_DLL = tcl$(TCL_VER).dll
+TCL_DLL = tcl$(TCL_VER)t.dll
 CFLAGS  = $(CFLAGS) -DFEAT_TCL -DDYNAMIC_TCL -DDYNAMIC_TCL_DLL=\"$(TCL_DLL)\" \
 		-DDYNAMIC_TCL_VER=\"$(TCL_VER_LONG)\"
 TCL_OBJ	= $(OUTDIR)\if_tcl.obj
