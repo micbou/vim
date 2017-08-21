@@ -215,7 +215,7 @@ Section "Vim executables and runtime files"
 	File ${VIMRT}\rgb.txt
 
 	File ${VIMTOOLS}\diff.exe
-	File ${VIMTOOLS}\winpty32.dll
+	File ${VIMTOOLS}\winpty.dll
 	File ${VIMTOOLS}\winpty-agent.exe
 
 	SetOutPath $0\colors
