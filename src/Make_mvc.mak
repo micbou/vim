@@ -1174,7 +1174,8 @@ all:	$(VIM).exe \
 	uninstal.exe \
 	xxd/xxd.exe \
 	tee/tee.exe \
-	GvimExt/gvimext.dll
+	GvimExt/gvimext.dll \
+	../nsis/libraries.nsh
 
 $(VIM).exe: $(OUTDIR) $(OBJ) $(GUI_OBJ) $(CUI_OBJ) $(OLE_OBJ) $(OLE_IDL) $(MZSCHEME_OBJ) \
 		$(LUA_OBJ) $(PERL_OBJ) $(PYTHON_OBJ) $(PYTHON3_OBJ) $(RUBY_OBJ) $(TCL_OBJ) \
@@ -1219,6 +1220,14 @@ GvimExt/gvimext.dll: GvimExt/gvimext.cpp GvimExt/gvimext.rc GvimExt/gvimext.h
 	$(MAKE) /NOLOGO -f Makefile $(MAKEFLAGS_GVIMEXT)
 	cd ..
 
+../nsis/libraries.nsh:
+	echo !define LUA_DLL lua$(LUA_VER).dll> $@
+	echo !define PERL_DLL $(PERL_DLL)>> $@
+	echo !define PYTHON_DLL python$(PYTHON_VER).dll>> $@
+	echo !define PYTHON3_DLL python$(PYTHON3_VER).dll>> $@
+	echo !define RACKET_DLL lib$(MZSCHEME_MAIN_LIB)$(MZSCHEME_VER).dll>> $@
+	echo !define RUBY_DLL $(RUBY_INSTALL_NAME).dll>> $@
+	echo !define TCL_DLL $(TCL_DLL)>> $@
 
 tags: notags
 	$(CTAGS) *.c *.cpp *.h if_perl.xs
@@ -1252,6 +1261,7 @@ clean:
 	$(MAKE) /NOLOGO -f Makefile clean
 	cd ..
 	- if exist testdir\*.out del testdir\*.out
+	- if exist ..\nsis\libraries.nsh del ..\nsis\libraries.nsh
 
 test:
 	cd testdir

@@ -28,6 +28,7 @@
 !define HAVE_NLS
 
 !include gvim_version.nsh	# for version number
+!include libraries.nsh # for libraries names
 
 # ----------- No configurable settings below this line -----------
 
@@ -198,8 +199,30 @@ Section "Vim executables and runtime files"
 	File ${VIMRT}\rgb.txt
 
 	File ${VIMTOOLS}\diff.exe
+
 	File ${VIMTOOLS}\winpty.dll
 	File ${VIMTOOLS}\winpty-agent.exe
+
+	# Lua
+	File ${VIMTOOLS}\${LUA_DLL}
+
+	# Perl
+	File ${VIMTOOLS}\${PERL_DLL}
+
+	# Python 2
+	File ${VIMTOOLS}\${PYTHON_DLL}
+
+	# Python 3
+	File ${VIMTOOLS}\${PYTHON3_DLL}
+
+	# Racket
+	File ${VIMTOOLS}\${RACKET_DLL}
+
+	# Ruby
+	File ${VIMTOOLS}\${RUBY_DLL}
+
+	# Tcl
+	File ${VIMTOOLS}\${TCL_DLL}
 
 	SetOutPath $0\colors
 	File ${VIMRT}\colors\*.*
