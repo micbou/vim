@@ -6733,6 +6733,7 @@ populate_module(PyObject *m)
     PyObject	*other_module;
     PyObject	*attr;
     PyObject	*imp;
+    PyObject	*util;
 
     for (i = 0; i < (int)(sizeof(numeric_constants)
 					   / sizeof(struct numeric_constant));
@@ -6805,16 +6806,42 @@ populate_module(PyObject *m)
 
     ADD_OBJECT(m, "VIM_SPECIAL_PATH", vim_special_path_object);
 
-    if (!(imp = PyImport_ImportModule("imp")))
+    // Importing the imp module is deprecated since Python 3.3 and raises a
+    // deprecation warning with Python 3.7. The official documentation suggests
+    // to use importlib.util.find_spec and importlib.import_module in place of
+    // imp.find_module and imp.load_module respectively. See
+    // https://docs.python.org/3.7/library/imp.html#imp.find_module and
+    // https://docs.python.org/3.7/library/imp.html#imp.load_module
+    if (!(imp = PyImport_ImportModule("importlib")))
 	return -1;
-
-    if (!(py_find_module = PyObject_GetAttrString(imp, "find_module")))
+#if PY_VERSION_HEX >= 0x03070000
+    if (!(util = PyImport_ImportModule("importlib.util")))
     {
 	Py_DECREF(imp);
 	return -1;
     }
 
+    if (!(py_find_module = PyObject_GetAttrString(util, "find_spec")))
+    {
+	Py_DECREF(util);
+	Py_DECREF(imp);
+	return -1;
+    }
+
+    Py_DECREF(util);
+#else
+    if (!(py_find_module = PyObject_GetAttrString(imp, "find_module")))
+    {
+	Py_DECREF(imp);
+	return -1;
+    }
+#endif
+
+#if PY_VERSION_HEX >= 0x03070000
+    if (!(py_load_module = PyObject_GetAttrString(imp, "import_module")))
+#else
     if (!(py_load_module = PyObject_GetAttrString(imp, "load_module")))
+#endif
     {
 	Py_DECREF(py_find_module);
 	Py_DECREF(imp);
